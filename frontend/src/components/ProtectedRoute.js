@@ -47,11 +47,11 @@ const ProtectedRoute = ({ children, requireAuth = true, allowedRoles = [] }) => 
 const getDefaultPageForRole = (role) => {
   switch (role) {
     case 'Student':
-      return '/dormitories';
+      return '/student/dashboard';
     case 'Manager':
-      return '/manage-rooms';
+      return '/manager/dashboard';
     case 'Admin':
-      return '/admin';
+      return '/manager/dashboard';
     default:
       return '/';
   }

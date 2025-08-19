@@ -11,17 +11,30 @@ const BillApproval = () => {
   
   const [pendingBills, setPendingBills] = useState([]);
   const [allBills, setAllBills] = useState([]);
+  const [overdueBills, setOverdueBills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(null);
-  const [activeTab, setActiveTab] = useState('pending'); // pending, all, reports
+  const [activeTab, setActiveTab] = useState('pending'); // pending, all, overdue, reports
   const [selectedBill, setSelectedBill] = useState(null);
   const [rejectionReason, setRejectionReason] = useState('');
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showCashModal, setShowCashModal] = useState(false);
+  const [cashAmount, setCashAmount] = useState('');
   
   // สำหรับรายงาน
   const [reportMonth, setReportMonth] = useState(new Date().getMonth() + 1);
   const [reportYear, setReportYear] = useState(new Date().getFullYear());
   const [exporting, setExporting] = useState(false);
+
+  // สำหรับ Filter
+  const [filters, setFilters] = useState({
+    status: 'all',
+    month: '',
+    year: new Date().getFullYear(),
+    room: '',
+    search: ''
+  });
+  const [showFilters, setShowFilters] = useState(false);
 
   const months = [
     { value: 1, label: 'มกราคม' }, { value: 2, label: 'กุมภาพันธ์' },
@@ -47,13 +60,20 @@ const BillApproval = () => {
   }
 
   useEffect(() => {
-    if (activeTab === 'pending') {
-      fetchPendingBills();
-    } else if (activeTab === 'all') {
-      fetchAllBills();
-    }
+    // Debounce การค้นหา - รอ 500ms หลังจากหยุดพิมพ์
+    const timeoutId = setTimeout(() => {
+      if (activeTab === 'pending') {
+        fetchPendingBills();
+      } else if (activeTab === 'all') {
+        fetchAllBills();
+      } else if (activeTab === 'overdue') {
+        fetchOverdueBills();
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
+  }, [activeTab, filters]); // เพิ่ม filters เป็น dependency
 
   const fetchPendingBills = async () => {
     setLoading(true);
@@ -75,14 +95,39 @@ const BillApproval = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
+      
+      // สร้าง params จาก filters
+      const params = { limit: 50 };
+      if (filters.status !== 'all') params.status = filters.status;
+      if (filters.month) params.month = filters.month;
+      if (filters.year) params.year = filters.year;
+      if (filters.room) params.room_id = filters.room;
+      if (filters.search) params.search = filters.search;
+      
       const response = await axios.get('http://localhost:5000/api/bills/all', {
         headers: { Authorization: `Bearer ${token}` },
-        params: { limit: 50 }
+        params
       });
       setAllBills(response.data.bills);
     } catch (error) {
       console.error('Failed to fetch all bills:', error);
       showError('ไม่สามารถโหลดรายการบิลได้');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchOverdueBills = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:5000/api/bills/overdue', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setOverdueBills(response.data);
+    } catch (error) {
+      console.error('Failed to fetch overdue bills:', error);
+      showError('ไม่สามารถโหลดบิลค้างชำระได้');
     } finally {
       setLoading(false);
     }
@@ -99,10 +144,51 @@ const BillApproval = () => {
       showSuccess('อนุมัติการชำระสำเร็จ');
       fetchPendingBills();
       if (activeTab === 'all') fetchAllBills();
+      if (activeTab === 'overdue') fetchOverdueBills();
 
     } catch (error) {
       console.error('Failed to approve bill:', error);
       showError('ไม่สามารถอนุมัติการชำระได้');
+    } finally {
+      setProcessing(null);
+    }
+  };
+
+  // ฟังก์ชันใหม่: อนุมัติแบบเงินสด
+  const handleCashPayment = async () => {
+    if (!selectedBill || !cashAmount) {
+      showError('กรุณาระบุจำนวนเงิน');
+      return;
+    }
+
+    const amount = parseFloat(cashAmount);
+    if (amount <= 0) {
+      showError('จำนวนเงินต้องมากกว่า 0');
+      return;
+    }
+
+    setProcessing(selectedBill.bill_id);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.patch(`http://localhost:5000/api/bills/${selectedBill.bill_id}/cash-payment`, {
+        amount: amount,
+        payment_method: 'cash',
+        notes: `รับชำระเงินสด จำนวน ${amount.toLocaleString()} บาท`
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      showSuccess('บันทึกการชำระเงินสดสำเร็จ');
+      setShowCashModal(false);
+      setSelectedBill(null);
+      setCashAmount('');
+      fetchPendingBills();
+      if (activeTab === 'all') fetchAllBills();
+      if (activeTab === 'overdue') fetchOverdueBills();
+
+    } catch (error) {
+      console.error('Failed to record cash payment:', error);
+      showError('ไม่สามารถบันทึกการชำระเงินสดได้');
     } finally {
       setProcessing(null);
     }
@@ -129,6 +215,7 @@ const BillApproval = () => {
       setRejectionReason('');
       fetchPendingBills();
       if (activeTab === 'all') fetchAllBills();
+      if (activeTab === 'overdue') fetchOverdueBills();
 
     } catch (error) {
       console.error('Failed to reject bill:', error);
@@ -283,6 +370,30 @@ const BillApproval = () => {
             </LoadingButton>
           </div>
         )}
+
+        {/* ปุ่มสำหรับบิลค้างชำระ - Desktop View */}
+        {showActions && (bill.bill_status === 'issued' || bill.bill_status === 'overdue') && (
+          <div className="flex justify-end space-x-3 mt-4">
+            <button
+              onClick={() => {
+                setSelectedBill(bill);
+                setCashAmount(bill.total_amount?.toString() || '');
+                setShowCashModal(true);
+              }}
+              disabled={processing === bill.bill_id}
+              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              💵 รับเงินสด
+            </button>
+            <LoadingButton
+              loading={processing === bill.bill_id}
+              onClick={() => handleApprove(bill.bill_id)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              ✅ อนุมัติเลย
+            </LoadingButton>
+          </div>
+        )}
       </div>
 
       {/* Mobile View */}
@@ -360,6 +471,30 @@ const BillApproval = () => {
             </LoadingButton>
           </div>
         )}
+
+        {/* ปุ่มสำหรับบิลที่ยังไม่ชำระ - แอดมิน/ผจก อนุมัติได้เลย */}
+        {showActions && (bill.bill_status === 'issued' || bill.bill_status === 'overdue') && (
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <button
+              onClick={() => {
+                setSelectedBill(bill);
+                setCashAmount(bill.total_amount?.toString() || '');
+                setShowCashModal(true);
+              }}
+              disabled={processing === bill.bill_id}
+              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+            >
+              💵 รับเงินสด
+            </button>
+            <LoadingButton
+              loading={processing === bill.bill_id}
+              onClick={() => handleApprove(bill.bill_id)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+            >
+              ✅ อนุมัติเลย
+            </LoadingButton>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -377,15 +512,15 @@ const BillApproval = () => {
                 ✅ อนุมัติการชำระเงิน
               </h1>
               <p className="text-gray-600">
-                ตรวจสอบและอนุมัติการชำระเงินจากนักศึกษา
+                ตรวจสอบและอนุมัติการชำระเงินจากนักศึกษา • แอดมิน/ผจก สามารถอนุมัติได้ทันที
               </p>
             </div>
 
             {/* แท็บ */}
-            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-6">
+            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-4 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('pending')}
-                className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+                className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
                   activeTab === 'pending' 
                     ? 'bg-white text-gray-900 shadow-sm' 
                     : 'text-gray-600 hover:text-gray-900'
@@ -394,8 +529,18 @@ const BillApproval = () => {
                 รออนุมัติ ({pendingBills.length})
               </button>
               <button
+                onClick={() => setActiveTab('overdue')}
+                className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
+                  activeTab === 'overdue' 
+                    ? 'bg-white text-gray-900 shadow-sm' 
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                ค้างชำระ ({overdueBills.length})
+              </button>
+              <button
                 onClick={() => setActiveTab('all')}
-                className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+                className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
                   activeTab === 'all' 
                     ? 'bg-white text-gray-900 shadow-sm' 
                     : 'text-gray-600 hover:text-gray-900'
@@ -405,7 +550,7 @@ const BillApproval = () => {
               </button>
               <button
                 onClick={() => setActiveTab('reports')}
-                className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+                className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
                   activeTab === 'reports' 
                     ? 'bg-white text-gray-900 shadow-sm' 
                     : 'text-gray-600 hover:text-gray-900'
@@ -414,6 +559,125 @@ const BillApproval = () => {
                 รายงาน
               </button>
             </div>
+
+            {/* Filter Panel */}
+            {(activeTab === 'all' || activeTab === 'overdue') && (
+              <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-medium text-gray-900 flex items-center">
+                    🔍 ตัวกรองข้อมูล
+                  </h3>
+                  <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full hover:bg-blue-200 transition-colors"
+                  >
+                    {showFilters ? 'ซ่อน' : 'แสดง'}
+                  </button>
+                </div>
+                
+                {showFilters && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+                    {/* สถานะ */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">สถานะ</label>
+                      <select
+                        value={filters.status}
+                        onChange={(e) => setFilters({...filters, status: e.target.value})}
+                        className="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="all">ทั้งหมด</option>
+                        <option value="pending_approval">รอการอนุมัติ</option>
+                        <option value="paid">ชำระแล้ว</option>
+                        <option value="issued">ออกบิลแล้ว</option>
+                        <option value="overdue">เกินกำหนด</option>
+                        <option value="cancelled">ยกเลิก</option>
+                      </select>
+                    </div>
+
+                    {/* เดือน */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">เดือน</label>
+                      <select
+                        value={filters.month}
+                        onChange={(e) => setFilters({...filters, month: e.target.value})}
+                        className="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="">ทุกเดือน</option>
+                        {months.map(month => (
+                          <option key={month.value} value={month.value}>
+                            {month.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* ปี */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">ปี</label>
+                      <select
+                        value={filters.year}
+                        onChange={(e) => setFilters({...filters, year: e.target.value})}
+                        className="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="">ทุกปี</option>
+                        {years.map(year => (
+                          <option key={year} value={year}>
+                            {year + 543}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* ห้อง */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">เลขห้อง</label>
+                      <input
+                        type="text"
+                        value={filters.room}
+                        onChange={(e) => setFilters({...filters, room: e.target.value})}
+                        placeholder="เช่น 101"
+                        className="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+
+                    {/* ค้นหา */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        ค้นหา {loading && <span className="text-blue-500">🔄</span>}
+                      </label>
+                      <input
+                        type="text"
+                        value={filters.search}
+                        onChange={(e) => setFilters({...filters, search: e.target.value})}
+                        placeholder="ชื่อผู้เช่า, เบอร์โทร, เลขห้อง"
+                        className="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      <div className="text-xs text-gray-500 mt-1">
+                        💡 ค้นหาจะใช้เวลา 0.5 วิ หลังหยุดพิมพ์
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ปุ่มรีเซ็ต */}
+                {showFilters && (
+                  <div className="mt-3 flex justify-end">
+                    <button
+                      onClick={() => setFilters({
+                        status: 'all',
+                        month: '',
+                        year: new Date().getFullYear(),
+                        room: '',
+                        search: ''
+                      })}
+                      className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-md hover:bg-gray-200 transition-colors"
+                    >
+                      รีเซ็ตตัวกรอง
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* เนื้อหาตามแท็บ */}
             {loading ? (
@@ -476,11 +740,39 @@ const BillApproval = () => {
             ) : (
               /* แท็บบิล */
               <div className="space-y-4">
-                {(activeTab === 'pending' ? pendingBills : allBills).length === 0 ? (
-                  <div className="text-center py-12 bg-white rounded-lg shadow">
-                    <div className="text-gray-400 text-6xl mb-4">📄</div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      {activeTab === 'pending' ? 'ไม่มีบิลรออนุมัติ' : 'ไม่พบรายการบิล'}
+                {/* สถิติการกรอง */}
+                {activeTab === 'all' && (
+                  <div className="bg-blue-50 border-l-4 border-blue-400 p-3 text-sm">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <span className="text-blue-700">
+                          📊 พบรายการ <strong>{allBills.length}</strong> รายการ
+                          {filters.status !== 'all' && ` (สถานะ: ${statusLabels[filters.status]?.label})`}
+                          {filters.month && ` (เดือน: ${months[filters.month - 1]?.label})`}
+                          {filters.year && ` (ปี: ${parseInt(filters.year) + 543})`}
+                          {filters.room && ` (ห้อง: ${filters.room})`}
+                          {filters.search && ` (ค้นหา: "${filters.search}")`}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {activeTab === 'overdue' && (
+                  <div className="bg-red-50 border-l-4 border-red-400 p-3 text-sm">
+                    <div className="text-red-700">
+                      ⚠️ พบบิลค้างชำระ <strong>{overdueBills.length}</strong> รายการ
+                    </div>
+                  </div>
+                )}
+                {(() => {
+                  const currentBills = activeTab === 'pending' ? pendingBills : activeTab === 'overdue' ? overdueBills : allBills;
+                  return currentBills.length === 0 ? (
+                    <div className="text-center py-12 bg-white rounded-lg shadow">
+                      <div className="text-gray-400 text-6xl mb-4">📄</div>
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        {activeTab === 'pending' ? 'ไม่มีบิลรออนุมัติ' : 
+                         activeTab === 'overdue' ? 'ไม่มีบิลค้างชำระ' : 'ไม่พบรายการบิล'}
                     </h3>
                     <p className="text-gray-600">
                       {activeTab === 'pending' 
@@ -488,15 +780,16 @@ const BillApproval = () => {
                         : 'ยังไม่มีข้อมูลบิลในระบบ'}
                     </p>
                   </div>
-                ) : (
-                  (activeTab === 'pending' ? pendingBills : allBills).map((bill) => (
-                    <BillCard 
-                      key={bill.bill_id} 
-                      bill={bill} 
-                      showActions={activeTab === 'pending'} 
-                    />
-                  ))
-                )}
+                  ) : (
+                    currentBills.map((bill) => (
+                      <BillCard 
+                        key={bill.bill_id} 
+                        bill={bill} 
+                        showActions={true}
+                      />
+                    ))
+                  );
+                })()}
               </div>
             )}
           </div>
@@ -538,6 +831,66 @@ const BillApproval = () => {
                   className="btn-primary flex-1 disabled:opacity-50"
                 >
                   ยืนยันปฏิเสธ
+                </LoadingButton>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal รับเงินสด */}
+        {showCashModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                💵 บันทึกการรับชำระเงินสด
+              </h3>
+              
+              {selectedBill && (
+                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="text-sm text-gray-600 mb-2">รายละเอียดบิล</div>
+                  <div className="text-sm">
+                    <div>ห้อง: {selectedBill.room_number}</div>
+                    <div>ผู้เช่า: {selectedBill.member?.mem_name}</div>
+                    <div>จำนวนเงินรวม: ฿{selectedBill.total_amount?.toLocaleString()}</div>
+                  </div>
+                </div>
+              )}
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  จำนวนเงินที่รับชำระ (บาท)
+                </label>
+                <input
+                  type="number"
+                  value={cashAmount}
+                  onChange={(e) => setCashAmount(e.target.value)}
+                  className="input-field w-full"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                />
+                <div className="text-xs text-gray-500 mt-1">
+                  แนะนำ: ฿{selectedBill?.total_amount?.toLocaleString()}
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowCashModal(false);
+                    setSelectedBill(null);
+                    setCashAmount('');
+                  }}
+                  className="flex-1 btn-secondary"
+                >
+                  ยกเลิก
+                </button>
+                <LoadingButton
+                  loading={processing === selectedBill?.bill_id}
+                  onClick={handleCashPayment}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                >
+                  บันทึกการชำระ
                 </LoadingButton>
               </div>
             </div>
