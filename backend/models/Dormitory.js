@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/database.js';
 
 const Dormitory = sequelize.define('Dormitory', {
   id: {
@@ -69,4 +69,4 @@ const Dormitory = sequelize.define('Dormitory', {
   timestamps: true
 });
 
-module.exports = Dormitory; 
+export default Dormitory; 

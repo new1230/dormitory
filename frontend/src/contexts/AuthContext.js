@@ -37,34 +37,68 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (email, password) => {
-    // ข้ามการเรียก API ชั่วาว
-    const fakeToken = 'testtoken';
-    const fakeUser = { email };
-    localStorage.setItem('token', fakeToken);
-    setToken(fakeToken);
-    setUser(fakeUser);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${fakeToken}`;
-  };
-
-  const register = async (userData) => {
+  const login = async (email, password, rememberMe) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', userData);
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        email,
+        password,
+        rememberMe
+      });
+      
       const { token: newToken, user: newUser } = response.data;
       localStorage.setItem('token', newToken);
       setToken(newToken);
       setUser(newUser);
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
     } catch (error) {
+      throw new Error(error.response?.data?.message || 'เข้าสู่ระบบไม่สำเร็จ');
+    }
+  };
+
+  const register = async (userData) => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/register', userData);
+      
+      // ไม่ต้อง auto login หลังจากสมัครสมาชิก
+      // ให้ผู้ใช้ต้อง login เองอีกครั้ง
+      console.log('✅ Registration successful:', response.data.message);
+      
+      return response.data; // ส่งข้อมูลกลับไปให้ component
+    } catch (error) {
       throw new Error(error.response?.data?.message || 'Registration failed');
     }
   };
 
   const logout = () => {
+    console.log('🚪 AuthContext - Logout called');
+    console.log('🚪 AuthContext - Current user before logout:', user);
+    console.log('🚪 AuthContext - Current token before logout:', token);
+    
+    // ลบ token จาก localStorage
     localStorage.removeItem('token');
+    console.log('🚪 AuthContext - Token removed from localStorage');
+    
+    // ล้าง state
     setToken(null);
     setUser(null);
+    console.log('🚪 AuthContext - State cleared (token and user set to null)');
+    
+    // ลบ Authorization header จาก axios
     delete axios.defaults.headers.common['Authorization'];
+    console.log('🚪 AuthContext - Authorization header removed from axios');
+    
+    console.log('🚪 AuthContext - Logout completed');
+  };
+
+  const refreshUser = async () => {
+    try {
+      if (token) {
+        const response = await axios.get('http://localhost:5000/api/auth/me');
+        setUser(response.data);
+      }
+    } catch (error) {
+      console.error('Failed to refresh user:', error);
+    }
   };
 
   const value = {
@@ -73,7 +107,8 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    loading
+    loading,
+    refreshUser
   };
 
   return (

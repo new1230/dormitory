@@ -1,89 +1,110 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/database.js';
 
 const Booking = sequelize.define('Booking', {
-  id: {
+  booking_id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
-  userId: {
+  member_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Users',
-      key: 'id'
+      model: 'member',
+      key: 'mem_id'
     }
   },
-  dormitoryId: {
+  room_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Dormitories',
-      key: 'id'
+      model: 'room',
+      key: 'room_id'
     }
   },
-  roomType: {
-    type: DataTypes.JSON,
-    allowNull: false
-  },
-  checkInDate: {
+  check_in_date: {
     type: DataTypes.DATE,
     allowNull: false
   },
-  checkOutDate: {
+  check_out_date: {
     type: DataTypes.DATE,
     allowNull: false
   },
-  totalPrice: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
+  booking_date: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
   },
-  status: {
-    type: DataTypes.ENUM('pending', 'confirmed', 'cancelled', 'completed'),
+  booking_status: {
+    type: DataTypes.ENUM('pending', 'approved', 'rejected', 'cancelled', 'completed'),
     defaultValue: 'pending'
   },
-  paymentStatus: {
-    type: DataTypes.ENUM('pending', 'paid', 'refunded'),
-    defaultValue: 'pending'
-  },
-  specialRequests: {
+  remarks: {
     type: DataTypes.TEXT
   },
-  notes: {
-    type: DataTypes.TEXT
+  deposit_amount: {
+    type: DataTypes.DECIMAL(10, 2)
   },
-  cancelledAt: {
+  deposit_status: {
+    type: DataTypes.ENUM('none', 'pending', 'paid', 'refunded'),
+    defaultValue: 'none'
+  },
+  // เพิ่มฟิลด์ใหม่สำหรับ flow การจอง
+  contract_accepted: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  contract_accepted_at: {
     type: DataTypes.DATE
   },
-  cancelledById: {
+  payment_slip_url: {
+    type: DataTypes.STRING
+  },
+  payment_slip_uploaded_at: {
+    type: DataTypes.DATE
+  },
+  payment_deadline: {
+    type: DataTypes.DATE
+  },
+  manager_approved_at: {
+    type: DataTypes.DATE
+  },
+  manager_approved_by: {
     type: DataTypes.INTEGER,
     references: {
-      model: 'Users',
-      key: 'id'
+      model: 'member',
+      key: 'mem_id'
     }
   },
-  cancellationReason: {
-    type: DataTypes.TEXT
+  total_price: {
+    type: DataTypes.DECIMAL(10, 2)
   }
 }, {
+  tableName: 'booking',
   timestamps: true,
   hooks: {
     beforeCreate: (booking) => {
-      if (booking.checkInDate && booking.checkOutDate && booking.roomType && booking.roomType.price) {
-        const days = Math.ceil((new Date(booking.checkOutDate) - new Date(booking.checkInDate)) / (1000 * 60 * 60 * 24));
-        booking.totalPrice = days * booking.roomType.price;
-      }
-    },
-    beforeUpdate: (booking) => {
-      if (booking.changed('checkInDate') || booking.changed('checkOutDate') || booking.changed('roomType')) {
-        if (booking.checkInDate && booking.checkOutDate && booking.roomType && booking.roomType.price) {
-          const days = Math.ceil((new Date(booking.checkOutDate) - new Date(booking.checkInDate)) / (1000 * 60 * 60 * 24));
-          booking.totalPrice = days * booking.roomType.price;
-        }
+      // Auto-calculate price can be done if needed
+      if (!booking.total_price && booking.check_in_date && booking.check_out_date) {
+        const months = Math.ceil((new Date(booking.check_out_date) - new Date(booking.check_in_date)) / (1000 * 60 * 60 * 24 * 30));
+        // Default price calculation if not provided
+        booking.total_price = months * 3000; // default 3000 per month
       }
     }
   }
 });
 
-module.exports = Booking; 
+// Define associations (will be set up after all models are imported)
+Booking.associate = (models) => {
+  Booking.belongsTo(models.User, {
+    foreignKey: 'member_id',
+    as: 'member'
+  });
+  Booking.belongsTo(models.Room, {
+    foreignKey: 'room_id',
+    as: 'room'
+  });
+};
+
+export default Booking; 

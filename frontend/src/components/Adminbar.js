@@ -22,7 +22,7 @@ const Adminbar = () => {
           </Link>
           <div className="flex items-center space-x-4">
             <Link to="/dormitories" className="text-gray-700 hover:text-primary-600">
-              หอพัก
+              ห้องพัก
             </Link>
             <Link to="/room-detail" className="text-gray-700 hover:text-primary-600">
               ราย

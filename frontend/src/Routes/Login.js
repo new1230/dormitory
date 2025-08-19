@@ -1,14 +1,17 @@
 import Navbar from '../components/Navbar';
+import PageTransition from '../components/PageTransition';
 import Login from "../pages/Login";
 
 const LoginArea = () => {
   return (
-    <>
+    <div>
       <Navbar />
-      <main className="main-area fix">
-        <Login />
-      </main>
-    </>
+      <PageTransition>
+        <main className="main-area fix">
+          <Login />
+        </main>
+      </PageTransition>
+    </div>
   );
 };
 

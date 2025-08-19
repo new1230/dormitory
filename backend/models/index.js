@@ -1,19 +1,12 @@
-const User = require('./User');
-const Dormitory = require('./Dormitory');
-const Booking = require('./Booking');
+import User from './User.js';
+import Dormitory from './Dormitory.js';
+import Booking from './Booking.js';
 
-// Define associations
-User.hasMany(Booking, { foreignKey: 'userId', as: 'bookings' });
-Booking.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+// Define associations (ต้องปรับให้ตรงกับ database schema ใหม่)
+// User.hasMany(Booking, { foreignKey: 'member_id', as: 'bookings' });
+// Booking.belongsTo(User, { foreignKey: 'member_id', as: 'user' });
 
-Dormitory.hasMany(Booking, { foreignKey: 'dormitoryId', as: 'bookings' });
-Booking.belongsTo(Dormitory, { foreignKey: 'dormitoryId', as: 'dormitory' });
-
-// For cancelled bookings
-User.hasMany(Booking, { foreignKey: 'cancelledById', as: 'cancelledBookings' });
-Booking.belongsTo(User, { foreignKey: 'cancelledById', as: 'cancelledBy' });
-
-module.exports = {
+export {
   User,
   Dormitory,
   Booking
