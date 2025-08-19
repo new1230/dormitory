@@ -1,6 +1,20 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
+export const authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ message: 'ไม่พบข้อมูลผู้ใช้' });
+    }
+
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: 'ไม่มีสิทธิ์เข้าถึง' });
+    }
+
+    next();
+  };
+};
+
 export const authenticateToken = async (req, res, next) => {
   try {
     const authHeader = req.headers['authorization'];

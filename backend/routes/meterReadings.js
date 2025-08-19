@@ -63,7 +63,6 @@ router.get('/rooms/:year/:month', authenticateToken, requireManagerOrAdmin, asyn
       SELECT 
         r.room_id,
         r.room_number,
-        r.floor,
         rt.room_type_name,
         rt.water_rate,
         rt.electricity_rate,
@@ -71,8 +70,6 @@ router.get('/rooms/:year/:month', authenticateToken, requireManagerOrAdmin, asyn
         rt.payment_due_day,
         m.mem_id,
         m.mem_name,
-        m.mem_lastname,
-        s.stay_id,
         -- ข้อมูลมิเตอร์เดือนปัจจุบัน
         mr_current.reading_id as current_reading_id,
         mr_current.current_water_reading,
@@ -82,18 +79,17 @@ router.get('/rooms/:year/:month', authenticateToken, requireManagerOrAdmin, asyn
         mr_current.meter_photo_water,
         mr_current.meter_photo_electricity,
         mr_current.notes,
-        -- ข้อมูลมิเตอร์เดือนก่อน
-        mr_previous.current_water_reading as previous_water_reading,
-        mr_previous.current_electricity_reading as previous_electricity_reading
+        -- ข้อมูลมิเตอร์เดือนก่อน (ถ้าไม่มีให้เป็น 0)
+        COALESCE(mr_previous.current_water_reading, 0) as previous_water_reading,
+        COALESCE(mr_previous.current_electricity_reading, 0) as previous_electricity_reading
       FROM room r
       INNER JOIN room_type rt ON r.room_type_id = rt.room_type_id
-      INNER JOIN stay s ON r.room_id = s.room_id AND s.status = '1'
-      INNER JOIN member m ON s.member_id = m.mem_id
+      INNER JOIN \`member\` m ON r.current_tenant_id = m.mem_id
       LEFT JOIN meter_readings mr_current ON r.room_id = mr_current.room_id 
         AND mr_current.reading_month = ? AND mr_current.reading_year = ?
       LEFT JOIN meter_readings mr_previous ON r.room_id = mr_previous.room_id 
         AND mr_previous.reading_month = ? AND mr_previous.reading_year = ?
-      WHERE r.status = '0'
+      WHERE r.status = '0' AND r.current_tenant_id IS NOT NULL
       ORDER BY r.room_number ASC
     `, {
       replacements: [
@@ -108,7 +104,6 @@ router.get('/rooms/:year/:month', authenticateToken, requireManagerOrAdmin, asyn
     const roomsData = results.map(row => ({
       room_id: row.room_id,
       room_number: row.room_number,
-      floor: row.floor,
       room_type_name: row.room_type_name,
       room_rent: parseFloat(row.room_rent),
       water_rate: parseFloat(row.water_rate),
@@ -116,8 +111,7 @@ router.get('/rooms/:year/:month', authenticateToken, requireManagerOrAdmin, asyn
       payment_due_day: row.payment_due_day,
       tenant: {
         member_id: row.mem_id,
-        name: `${row.mem_name} ${row.mem_lastname}`,
-        stay_id: row.stay_id
+        name: row.mem_name
       },
       current_reading: {
         reading_id: row.current_reading_id,
@@ -207,9 +201,14 @@ router.post('/', authenticateToken, requireManagerOrAdmin, upload.fields([
     // จัดการรูปภาพ
     if (req.files?.meter_photo_water?.[0]) {
       meterData.meter_photo_water = req.files.meter_photo_water[0].filename;
+    } else if (req.body.meter_photo_water_filename) {
+      meterData.meter_photo_water = req.body.meter_photo_water_filename;
     }
+    
     if (req.files?.meter_photo_electricity?.[0]) {
       meterData.meter_photo_electricity = req.files.meter_photo_electricity[0].filename;
+    } else if (req.body.meter_photo_electricity_filename) {
+      meterData.meter_photo_electricity = req.body.meter_photo_electricity_filename;
     }
 
     // บันทึกหรืออัปเดตข้อมูล (upsert)
@@ -360,16 +359,16 @@ router.post('/create-bill', authenticateToken, requireManagerOrAdmin, async (req
       ]
     });
 
-    const stay = await sequelize.query(`
-      SELECT member_id FROM stay 
-      WHERE room_id = ? AND status = '1'
+    const roomWithTenant = await sequelize.query(`
+      SELECT current_tenant_id FROM room 
+      WHERE room_id = ? AND current_tenant_id IS NOT NULL
       LIMIT 1
     `, {
       replacements: [room_id],
       type: sequelize.QueryTypes.SELECT
     });
 
-    if (!stay[0]) {
+    if (!roomWithTenant[0] || !roomWithTenant[0].current_tenant_id) {
       return res.status(404).json({ message: 'ไม่พบผู้เช่าในห้องนี้' });
     }
 
@@ -390,7 +389,7 @@ router.post('/create-bill', authenticateToken, requireManagerOrAdmin, async (req
     // สร้างบิล
     const billData = {
       room_id: parseInt(room_id),
-      member_id: stay[0].member_id,
+      member_id: roomWithTenant[0].current_tenant_id,
       bill_month: parseInt(reading_month),
       bill_year: parseInt(reading_year),
       reading_id: meterReading.reading_id,
@@ -407,9 +406,17 @@ router.post('/create-bill', authenticateToken, requireManagerOrAdmin, async (req
       created_by: req.user.mem_id
     };
 
-    const [bill, created] = await MonthlyBill.upsert(billData, {
-      returning: true
+    // ลบบิลเก่าถ้ามี (ป้องกันการซ้ำ)
+    await MonthlyBill.destroy({
+      where: {
+        room_id: roomId,
+        bill_month: readingMonth,
+        bill_year: readingYear
+      }
     });
+
+    // สร้างบิลใหม่
+    const bill = await MonthlyBill.create(billData);
 
     // อัปเดตสถานะมิเตอร์ว่าสร้างบิลแล้ว
     await MeterReading.update(
@@ -418,7 +425,7 @@ router.post('/create-bill', authenticateToken, requireManagerOrAdmin, async (req
     );
 
     res.json({
-      message: created ? 'สร้างบิลสำเร็จ' : 'อัปเดตบิลสำเร็จ',
+      message: 'สร้างบิลสำเร็จ',
       bill,
       calculations: {
         water_units,
@@ -447,7 +454,7 @@ router.get('/bills/:year/:month', authenticateToken, requireManagerOrAdmin, asyn
         {
           model: Room,
           as: 'room',
-          attributes: ['room_number', 'floor'],
+          attributes: ['room_number'],
           include: [{
             model: RoomType,
             as: 'roomType',
@@ -457,7 +464,7 @@ router.get('/bills/:year/:month', authenticateToken, requireManagerOrAdmin, asyn
         {
           model: User,
           as: 'tenant',
-          attributes: ['mem_name', 'mem_lastname', 'mem_phone']
+          attributes: ['mem_name', 'mem_tel']
         }
       ],
       order: [['room_id', 'ASC']]

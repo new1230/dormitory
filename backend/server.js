@@ -37,6 +37,10 @@ import roomTypesRoutes from './routes/roomTypes.js';
 import roomsRoutes from './routes/rooms.js';
 import bookingsRoutes from './routes/bookings.js';
 import meterReadingsRoutes from './routes/meterReadings.js';
+import billsRoutes from './routes/bills.js';
+import dashboardRoutes from './routes/dashboard.js';
+import notificationsRoutes from './routes/notifications.js';
+import reportsRoutes from './routes/reports.js';
 
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -61,6 +65,10 @@ app.use('/api/room-types', roomTypesRoutes);
 app.use('/api/rooms', roomsRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/meter-readings', meterReadingsRoutes);
+app.use('/api/bills', billsRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/notifications', notificationsRoutes);
+app.use('/api/reports', reportsRoutes);
 
 
 // Error handling middleware

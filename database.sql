@@ -192,6 +192,91 @@ INSERT INTO `room` (`room_id`, `room_type_id`, `room_number`, `status`, `contrac
 (16, 5, 'C02', '3', NULL, NULL, NULL, 'ห้องรวมหญิง ตึก C', NULL),
 (17, 5, 'C03', '1', NULL, NULL, NULL, 'ห้องรวมหญิง ตึก C', NULL);
 
+-- --------------------------------------------------------
+
+-- Table สำหรับเก็บข้อมูลการจดมิเตอร์
+CREATE TABLE `meter_readings` (
+  `reading_id` int(11) NOT NULL AUTO_INCREMENT,
+  `room_id` int(11) NOT NULL,
+  `reading_month` int(2) NOT NULL COMMENT 'เดือนที่จด (1-12)',
+  `reading_year` int(4) NOT NULL COMMENT 'ปีที่จด',
+  `previous_water_reading` decimal(10,2) DEFAULT 0.00 COMMENT 'เลขมิเตอร์น้ำเดือนที่แล้ว',
+  `current_water_reading` decimal(10,2) NOT NULL COMMENT 'เลขมิเตอร์น้ำเดือนนี้',
+  `previous_electricity_reading` decimal(10,2) DEFAULT 0.00 COMMENT 'เลขมิเตอร์ไฟเดือนที่แล้ว',
+  `current_electricity_reading` decimal(10,2) NOT NULL COMMENT 'เลขมิเตอร์ไฟเดือนนี้',
+  `other_charges` decimal(10,2) DEFAULT 0.00 COMMENT 'ค่าใช้จ่ายอื่นๆ',
+  `other_charges_reason` text COMMENT 'เหตุผลค่าใช้จ่ายอื่นๆ',
+  `meter_photo_water` varchar(255) DEFAULT NULL COMMENT 'รูปภาพมิเตอร์น้ำ',
+  `meter_photo_electricity` varchar(255) DEFAULT NULL COMMENT 'รูปภาพมิเตอร์ไฟ',
+  `recorded_by` int(11) NOT NULL COMMENT 'ผู้จดมิเตอร์ (mem_id)',
+  `recorded_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `notes` text COMMENT 'หมายเหตุเพิ่มเติม',
+  `is_billed` tinyint(1) DEFAULT 0 COMMENT 'สร้างบิลแล้วหรือยัง',
+  PRIMARY KEY (`reading_id`),
+  UNIQUE KEY `unique_room_month_year` (`room_id`, `reading_month`, `reading_year`),
+  KEY `idx_room_id` (`room_id`),
+  KEY `idx_month_year` (`reading_month`, `reading_year`),
+  KEY `idx_recorded_by` (`recorded_by`),
+  CONSTRAINT `fk_meter_readings_room` FOREIGN KEY (`room_id`) REFERENCES `room` (`room_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_meter_readings_recorder` FOREIGN KEY (`recorded_by`) REFERENCES `member` (`mem_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='การจดมิเตอร์น้ำและไฟรายเดือน';
+
+-- Table สำหรับเก็บบิลรายเดือน
+CREATE TABLE `monthly_bills` (
+  `bill_id` int(11) NOT NULL AUTO_INCREMENT,
+  `room_id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL COMMENT 'ผู้เช่า',
+  `bill_month` int(2) NOT NULL COMMENT 'เดือนของบิล (1-12)',
+  `bill_year` int(4) NOT NULL COMMENT 'ปีของบิล',
+  `reading_id` int(11) DEFAULT NULL COMMENT 'อ้างอิงข้อมูลมิเตอร์',
+  `room_rent` decimal(10,2) NOT NULL COMMENT 'ค่าเช่าห้อง',
+  `water_cost` decimal(10,2) DEFAULT 0.00 COMMENT 'ค่าน้ำ',
+  `electricity_cost` decimal(10,2) DEFAULT 0.00 COMMENT 'ค่าไฟ',
+  `other_charges` decimal(10,2) DEFAULT 0.00 COMMENT 'ค่าใช้จ่ายอื่นๆ',
+  `other_charges_reason` text COMMENT 'เหตุผลค่าใช้จ่ายอื่นๆ',
+  `penalty_amount` decimal(10,2) DEFAULT 0.00 COMMENT 'ค่าปรับชำระล่าช้า',
+  `penalty_days` int(3) DEFAULT 0 COMMENT 'จำนวนวันที่เลยกำหนด',
+  `due_date` date NOT NULL COMMENT 'วันครบกำหนดชำระ',
+  `bill_status` enum('draft','issued','pending_approval','paid','overdue','cancelled') NOT NULL DEFAULT 'draft',
+  `issued_date` datetime DEFAULT NULL COMMENT 'วันที่ออกบิล',
+  `paid_date` datetime DEFAULT NULL COMMENT 'วันที่ชำระ',
+  `payment_slip_url` varchar(255) DEFAULT NULL COMMENT 'ไฟล์สลิปการชำระ',
+  `payment_slip_uploaded_at` datetime DEFAULT NULL COMMENT 'วันที่อัปโหลดสลิป',
+  `approved_by` int(11) DEFAULT NULL COMMENT 'ผู้อนุมัติ (mem_id)',
+  `rejected_by` int(11) DEFAULT NULL COMMENT 'ผู้ปฏิเสธ (mem_id)',
+  `rejected_at` datetime DEFAULT NULL COMMENT 'วันที่ปฏิเสธ',
+  `rejection_reason` text DEFAULT NULL COMMENT 'เหตุผลการปฏิเสธ',
+  `created_by` int(11) NOT NULL COMMENT 'ผู้สร้างบิล (mem_id)',
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_date` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`bill_id`),
+  UNIQUE KEY `unique_room_bill_month_year` (`room_id`, `bill_month`, `bill_year`),
+  KEY `idx_room_id` (`room_id`),
+  KEY `idx_member_id` (`member_id`),
+  KEY `idx_bill_month_year` (`bill_month`, `bill_year`),
+  KEY `idx_bill_status` (`bill_status`),
+  KEY `idx_due_date` (`due_date`),
+  KEY `idx_reading_id` (`reading_id`),
+  CONSTRAINT `fk_monthly_bills_room` FOREIGN KEY (`room_id`) REFERENCES `room` (`room_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_monthly_bills_member` FOREIGN KEY (`member_id`) REFERENCES `member` (`mem_id`),
+  CONSTRAINT `fk_monthly_bills_reading` FOREIGN KEY (`reading_id`) REFERENCES `meter_readings` (`reading_id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_monthly_bills_creator` FOREIGN KEY (`created_by`) REFERENCES `member` (`mem_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='บิลค่าใช้จ่ายรายเดือน';
+
+-- Insert mock data สำหรับ meter_readings
+INSERT INTO `meter_readings` (`room_id`, `reading_month`, `reading_year`, `previous_water_reading`, `current_water_reading`, `previous_electricity_reading`, `current_electricity_reading`, `recorded_by`) VALUES
+(3, 7, 2025, 100.50, 105.25, 2500.00, 2650.50, 2),
+(7, 7, 2025, 98.75, 102.00, 2300.25, 2420.75, 2),
+(13, 7, 2025, 150.00, 158.50, 3100.00, 3250.25, 2);
+
+-- Insert mock data สำหรับ monthly_bills  
+INSERT INTO `monthly_bills` (`room_id`, `member_id`, `bill_month`, `bill_year`, `reading_id`, `room_rent`, `water_cost`, `electricity_cost`, `due_date`, `bill_status`, `created_by`) VALUES
+(3, 3, 7, 2025, 1, 3500.00, 95.00, 450.75, '2025-08-15', 'issued', 2),
+(7, 4, 7, 2025, 2, 4500.00, 64.00, 362.50, '2025-08-10', 'overdue', 2),
+(13, 5, 7, 2025, 3, 2500.00, 170.00, 451.25, '2025-08-05', 'pending_approval', 2),
+(3, 3, 6, 2025, NULL, 3500.00, 89.25, 425.50, '2025-07-15', 'paid', 2),
+(7, 4, 6, 2025, NULL, 4500.00, 72.75, 380.25, '2025-07-15', 'paid', 2);
+
 --
 -- Triggers `room`
 --
