@@ -102,12 +102,11 @@ let isDatabaseConnected = false;
     // Test if tables exist
     try {
       const tables = await sequelize.getQueryInterface().showAllTables();
-      console.log(`✅ Found ${tables.length} tables in database`);
-      console.log('Tables:', tables.join(', '));
+      console.log(`✅ Database connected: ${tables.length} tables found`);
       
-      // Sync models (create tables if they don't exist)
-      await sequelize.sync();
-      console.log('✅ Database models synchronized');
+      // Sync models (silent)
+      await sequelize.sync({ logging: false });
+      console.log('✅ Models synchronized');
       
     } catch (dbError) {
       console.log(`⚠️  Database sync error:`, dbError.message);

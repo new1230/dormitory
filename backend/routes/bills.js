@@ -342,8 +342,17 @@ router.get('/all', authenticateToken, requireManagerOrAdmin, async (req, res) =>
       whereCondition.room_id = parseInt(room_id);
     }
 
-    // สำหรับค้นหา
-    const includeCondition = {
+    // เพิ่มเงื่อนไขค้นหาใน whereCondition หลัก
+    if (search) {
+      whereCondition[Op.or] = [
+        { '$room.room_number$': { [Op.like]: `%${search}%` } },
+        { '$tenant.mem_name$': { [Op.like]: `%${search}%` } },
+        { '$tenant.mem_tel$': { [Op.like]: `%${search}%` } }
+      ];
+    }
+
+    const bills = await MonthlyBill.findAndCountAll({
+      where: whereCondition,
       include: [
         {
           model: Room,
@@ -353,34 +362,14 @@ router.get('/all', authenticateToken, requireManagerOrAdmin, async (req, res) =>
             model: RoomType,
             as: 'roomType',
             attributes: ['room_type_name']
-          }],
-          ...(search && {
-            where: {
-              room_number: {
-                [Op.like]: `%${search}%`
-              }
-            }
-          })
+          }]
         },
         {
           model: User,
           as: 'tenant',
-          attributes: ['mem_name', 'mem_tel'],
-          ...(search && {
-            where: {
-              [Op.or]: [
-                { mem_name: { [Op.like]: `%${search}%` } },
-                { mem_tel: { [Op.like]: `%${search}%` } }
-              ]
-            }
-          })
+          attributes: ['mem_name', 'mem_tel']
         }
-      ]
-    };
-
-    const bills = await MonthlyBill.findAndCountAll({
-      where: whereCondition,
-      ...includeCondition,
+      ],
       order: [['bill_year', 'DESC'], ['bill_month', 'DESC'], ['created_date', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset)
@@ -408,6 +397,112 @@ router.get('/all', authenticateToken, requireManagerOrAdmin, async (req, res) =>
   } catch (error) {
     console.error('❌ Get all bills error:', error);
     res.status(500).json({ message: 'เกิดข้อผิดพลาดในการดึงข้อมูลบิล' });
+  }
+});
+
+// GET /api/bills/overdue - ดูบิลค้างชำระ (Manager/Admin)
+router.get('/overdue', authenticateToken, requireManagerOrAdmin, async (req, res) => {
+  try {
+    const bills = await MonthlyBill.findAll({
+      where: {
+        bill_status: { [Op.in]: ['issued', 'overdue'] },
+        due_date: { [Op.lt]: new Date() }
+      },
+      include: [
+        {
+          model: Room,
+          as: 'room',
+          attributes: ['room_number'],
+          include: [{
+            model: RoomType,
+            as: 'roomType',
+            attributes: ['room_type_name']
+          }]
+        },
+        {
+          model: User,
+          as: 'tenant',
+          attributes: ['mem_name', 'mem_tel']
+        }
+      ],
+      order: [['due_date', 'ASC']]
+    });
+
+    // คำนวณ total amount และจำนวนวันค้างชำระ
+    const billsWithTotal = bills.map(bill => {
+      const billData = bill.toJSON();
+      billData.total_amount = 
+        parseFloat(billData.room_rent) + 
+        parseFloat(billData.water_cost) + 
+        parseFloat(billData.electricity_cost) + 
+        parseFloat(billData.other_charges) + 
+        parseFloat(billData.penalty_amount);
+      
+      // คำนวณจำนวนวันเลยกำหนด
+      const dueDate = new Date(billData.due_date);
+      const today = new Date();
+      const diffTime = Math.abs(today - dueDate);
+      billData.overdue_days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      return billData;
+    });
+
+    res.json(billsWithTotal);
+
+  } catch (error) {
+    console.error('❌ Get overdue bills error:', error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาดในการดึงข้อมูลบิลค้างชำระ' });
+  }
+});
+
+// PATCH /api/bills/:id/cash-payment - บันทึกการรับชำระเงินสด (Manager/Admin)
+router.patch('/:id/cash-payment', authenticateToken, requireManagerOrAdmin, async (req, res) => {
+  try {
+    const billId = req.params.id;
+    const { amount, notes } = req.body;
+
+    const bill = await MonthlyBill.findByPk(billId);
+    if (!bill) {
+      return res.status(404).json({ message: 'ไม่พบบิลนี้' });
+    }
+
+    if (bill.bill_status === 'paid') {
+      return res.status(400).json({ message: 'บิลนี้ชำระเรียบร้อยแล้ว' });
+    }
+
+    // บันทึกการรับชำระเงินสด
+    await MonthlyBill.update({
+      bill_status: 'paid',
+      paid_date: new Date(),
+      approved_by: req.user.mem_id,
+      other_charges_reason: notes || `รับชำระเงินสด จำนวน ${amount} บาท`
+    }, {
+      where: { bill_id: billId }
+    });
+
+    const updatedBill = await MonthlyBill.findByPk(billId, {
+      include: [
+        {
+          model: Room,
+          as: 'room',
+          attributes: ['room_number']
+        },
+        {
+          model: User,
+          as: 'tenant',
+          attributes: ['mem_name']
+        }
+      ]
+    });
+
+    res.json({
+      message: 'บันทึกการรับชำระเงินสดสำเร็จ',
+      bill: updatedBill
+    });
+
+  } catch (error) {
+    console.error('❌ Cash payment error:', error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาดในการบันทึกการรับชำระเงินสด' });
   }
 });
 

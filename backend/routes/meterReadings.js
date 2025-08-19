@@ -279,8 +279,16 @@ router.post('/calculate-costs', authenticateToken, requireManagerOrAdmin, async 
     const previous_electricity = previousReading?.current_electricity_reading || 0;
 
     // คำนวณค่าใช้จ่าย
-    const water_units = parseFloat(current_water_reading) - previous_water;
-    const electricity_units = parseFloat(current_electricity_reading) - previous_electricity;
+    const water_units = Math.max(0, parseFloat(current_water_reading) - previous_water);
+    const electricity_units = Math.max(0, parseFloat(current_electricity_reading) - previous_electricity);
+    
+    // ตรวจสอบค่าติดลบ
+    if (parseFloat(current_water_reading) < previous_water) {
+      console.warn(`⚠️ Water reading decreased for room ${room_id}: ${previous_water} -> ${current_water_reading}`);
+    }
+    if (parseFloat(current_electricity_reading) < previous_electricity) {
+      console.warn(`⚠️ Electricity reading decreased for room ${room_id}: ${previous_electricity} -> ${current_electricity_reading}`);
+    }
     
     const water_cost = water_units * parseFloat(room.roomType.water_rate);
     const electricity_cost = electricity_units * parseFloat(room.roomType.electricity_rate);
@@ -373,8 +381,16 @@ router.post('/create-bill', authenticateToken, requireManagerOrAdmin, async (req
     }
 
     // คำนวณค่าใช้จ่าย
-    const water_units = meterReading.current_water_reading - meterReading.previous_water_reading;
-    const electricity_units = meterReading.current_electricity_reading - meterReading.previous_electricity_reading;
+    const water_units = Math.max(0, meterReading.current_water_reading - meterReading.previous_water_reading);
+    const electricity_units = Math.max(0, meterReading.current_electricity_reading - meterReading.previous_electricity_reading);
+    
+    // ตรวจสอบค่าติดลบ
+    if (meterReading.current_water_reading < meterReading.previous_water_reading) {
+      console.warn(`⚠️ Water reading decreased for room ${room_id}: ${meterReading.previous_water_reading} -> ${meterReading.current_water_reading}`);
+    }
+    if (meterReading.current_electricity_reading < meterReading.previous_electricity_reading) {
+      console.warn(`⚠️ Electricity reading decreased for room ${room_id}: ${meterReading.previous_electricity_reading} -> ${meterReading.current_electricity_reading}`);
+    }
     
     const water_cost = water_units * parseFloat(room.roomType.water_rate);
     const electricity_cost = electricity_units * parseFloat(room.roomType.electricity_rate);
@@ -409,9 +425,9 @@ router.post('/create-bill', authenticateToken, requireManagerOrAdmin, async (req
     // ลบบิลเก่าถ้ามี (ป้องกันการซ้ำ)
     await MonthlyBill.destroy({
       where: {
-        room_id: roomId,
-        bill_month: readingMonth,
-        bill_year: readingYear
+        room_id: parseInt(room_id),
+        bill_month: parseInt(reading_month),
+        bill_year: parseInt(reading_year)
       }
     });
 
