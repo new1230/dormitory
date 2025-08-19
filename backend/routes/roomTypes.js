@@ -174,7 +174,7 @@ router.post('/', authenticateToken, requireManagerOrAdmin, async (req, res) => {
   try {
     const { 
       room_type_name, description, capacity, price_per_month, price_per_semester,
-      water_rate, electricity_rate, payment_due_day, room_style,
+      water_rate, electricity_rate, payment_due_day, room_style, gender_allowed,
       air_condition, fan, furnished, room_category, room_size,
       facilities
     } = req.body;
