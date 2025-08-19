@@ -10,6 +10,13 @@ const Notification = ({
   const [show, setShow] = useState(isVisible);
 
   useEffect(() => {
+    const handleClose = () => {
+      setShow(false);
+      setTimeout(() => {
+        if (onClose) onClose();
+      }, 300);
+    };
+
     if (isVisible && duration > 0) {
       const timer = setTimeout(() => {
         handleClose();
@@ -17,7 +24,7 @@ const Notification = ({
       
       return () => clearTimeout(timer);
     }
-  }, [isVisible, duration]);
+  }, [isVisible, duration, onClose]);
 
   const handleClose = () => {
     setShow(false);

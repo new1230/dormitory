@@ -3,6 +3,10 @@ import { useState, useCallback } from 'react';
 const useNotification = () => {
   const [notifications, setNotifications] = useState([]);
 
+  const removeNotification = useCallback((id) => {
+    setNotifications(prev => prev.filter(notif => notif.id !== id));
+  }, []);
+
   const addNotification = useCallback((message, type = 'info', duration = 4000) => {
     const id = Date.now() + Math.random();
     const notification = {
@@ -24,11 +28,7 @@ const useNotification = () => {
     }
 
     return id;
-  }, []);
-
-  const removeNotification = useCallback((id) => {
-    setNotifications(prev => prev.filter(notif => notif.id !== id));
-  }, []);
+  }, [removeNotification]);
 
   const clearAllNotifications = useCallback(() => {
     setNotifications([]);

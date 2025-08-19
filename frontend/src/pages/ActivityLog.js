@@ -18,6 +18,7 @@ const ActivityLog = () => {
 
   useEffect(() => {
     fetchActivityLog();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.page]);
 
   const fetchActivityLog = async () => {

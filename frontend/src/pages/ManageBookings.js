@@ -21,6 +21,7 @@ const ManageBookings = () => {
     if (user && (user.role === 'Manager' || user.role === 'Admin')) {
       fetchAllBookings();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const fetchAllBookings = async () => {

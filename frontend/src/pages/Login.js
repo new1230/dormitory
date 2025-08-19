@@ -15,8 +15,16 @@ const Login = () => {
     e.preventDefault();
     setError('');
     try {
-      await login(email, password, rememberMe);
-      navigate('/dormitories');
+      const userData = await login(email, password, rememberMe);
+      
+      // Redirect ตาม role
+      if (userData?.role === 'Student') {
+        navigate('/student/dashboard');
+      } else if (userData?.role === 'Manager' || userData?.role === 'Admin') {
+        navigate('/manager/dashboard');
+      } else {
+        navigate('/dormitories'); // fallback
+      }
     } catch (err) {
       setError(err.message);
     }

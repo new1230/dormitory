@@ -34,6 +34,7 @@ const MeterReading = () => {
 
   useEffect(() => {
     fetchRooms();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMonth, selectedYear]);
 
   const fetchRooms = async () => {
@@ -353,7 +354,141 @@ const MeterReading = () => {
 
             {/* ตารางจดมิเตอร์ */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="overflow-x-auto">
+              {/* Mobile View */}
+              <div className="block lg:hidden">
+                <div className="space-y-4 p-4">
+                  {rooms.map((room) => {
+                    const roomData = meterData[room.room_id] || {};
+                    const calc = calculations[room.room_id] || {};
+                    
+                    return (
+                      <div key={room.room_id} className="bg-gray-50 rounded-lg p-4">
+                        {/* หัวข้อห้อง */}
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <div className="text-lg font-semibold text-gray-900">
+                              ห้อง {room.room_number}
+                            </div>
+                            <div className="text-sm text-gray-600">{room.room_type_name}</div>
+                            <div className="text-sm text-blue-600">{room.tenant.name}</div>
+                          </div>
+                          <div className="text-right text-sm">
+                            <div className="text-green-600 font-semibold">
+                              ฿{room.room_rent.toLocaleString()}/เดือน
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* มิเตอร์น้ำ */}
+                        <div className="grid grid-cols-2 gap-4 mb-3">
+                          <div>
+                            <label className="text-xs text-gray-700 font-medium">มิเตอร์น้ำ</label>
+                            <div className="text-xs text-gray-500 mb-1">
+                              เดือนก่อน: {room.previous_reading.water_reading}
+                            </div>
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={roomData.current_water_reading || ''}
+                              onChange={(e) => handleInputChange(room.room_id, 'current_water_reading', e.target.value)}
+                              className="input-field text-sm w-full"
+                              placeholder="เดือนนี้"
+                            />
+                            {calc.water_units > 0 && (
+                              <div className="text-xs text-blue-600 mt-1">
+                                ใช้: {calc.water_units} หน่วย = ฿{calc.water_cost?.toLocaleString()}
+                              </div>
+                            )}
+                          </div>
+
+                          <div>
+                            <label className="text-xs text-gray-700 font-medium">มิเตอร์ไฟ</label>
+                            <div className="text-xs text-gray-500 mb-1">
+                              เดือนก่อน: {room.previous_reading.electricity_reading}
+                            </div>
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={roomData.current_electricity_reading || ''}
+                              onChange={(e) => handleInputChange(room.room_id, 'current_electricity_reading', e.target.value)}
+                              className="input-field text-sm w-full"
+                              placeholder="เดือนนี้"
+                            />
+                            {calc.electricity_units > 0 && (
+                              <div className="text-xs text-green-600 mt-1">
+                                ใช้: {calc.electricity_units} หน่วย = ฿{calc.electricity_cost?.toLocaleString()}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* ค่าใช้จ่ายอื่น */}
+                        <div className="mb-3">
+                          <label className="text-xs text-gray-700 font-medium">ค่าใช้จ่ายอื่น</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={roomData.other_charges || ''}
+                            onChange={(e) => handleInputChange(room.room_id, 'other_charges', e.target.value)}
+                            className="input-field text-sm w-full mb-2"
+                            placeholder="0"
+                          />
+                          <textarea
+                            value={roomData.other_charges_reason || ''}
+                            onChange={(e) => handleInputChange(room.room_id, 'other_charges_reason', e.target.value)}
+                            className="input-field text-xs w-full h-16 resize-none"
+                            placeholder="เหตุผล..."
+                          />
+                        </div>
+
+                        {/* ยอดรวม */}
+                        {calc.total_amount && (
+                          <div className="bg-white rounded p-3 mb-3">
+                            <div className="text-center">
+                              <div className="text-lg font-bold text-green-600 mb-1">
+                                ฿{calc.total_amount.toLocaleString()}
+                              </div>
+                              <div className="text-xs text-gray-600 space-y-1">
+                                <div>ห้อง: ฿{room.room_rent.toLocaleString()}</div>
+                                <div>น้ำ: ฿{calc.water_cost?.toLocaleString()}</div>
+                                <div>ไฟ: ฿{calc.electricity_cost?.toLocaleString()}</div>
+                                <div>อื่นๆ: ฿{calc.other_charges?.toLocaleString()}</div>
+                                {calc.penalty_amount > 0 && (
+                                  <div className="text-red-600">
+                                    ค่าปรับ: ฿{calc.penalty_amount?.toLocaleString()}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* ปุ่มจัดการ */}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => saveMeterReading(room.room_id)}
+                            disabled={!roomData.current_water_reading || !roomData.current_electricity_reading}
+                            className="btn-secondary text-sm flex-1 disabled:opacity-50"
+                          >
+                            💾 บันทึก
+                          </button>
+                          {room.current_reading.reading_id && (
+                            <button
+                              onClick={() => createBill(room.room_id)}
+                              className="btn-primary text-sm flex-1"
+                            >
+                              🧾 สร้างบิล
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden lg:block overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
@@ -398,9 +533,6 @@ const MeterReading = () => {
                               </div>
                               <div className="text-sm text-gray-500">
                                 {room.room_type_name}
-                              </div>
-                              <div className="text-xs text-gray-400">
-                                ชั้น {room.floor}
                               </div>
                             </div>
                           </td>

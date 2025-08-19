@@ -73,12 +73,14 @@ const ManageRoomTypes = () => {
       navigate('/');
       showError('คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
     if (user && ['Manager', 'Admin'].includes(user.role)) {
       fetchRoomTypes();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const fetchRoomTypes = async () => {

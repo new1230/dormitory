@@ -31,6 +31,7 @@ const ManageUsers = () => {
     if (user && user.role === 'Admin') {
       fetchUsers();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const fetchUsers = async () => {

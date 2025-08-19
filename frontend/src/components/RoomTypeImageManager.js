@@ -11,6 +11,7 @@ const RoomTypeImageManager = ({ roomTypeId, onImagesChange }) => {
     if (roomTypeId) {
       fetchImages();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomTypeId]);
 
   const fetchImages = async () => {

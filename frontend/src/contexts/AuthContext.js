@@ -50,6 +50,8 @@ export const AuthProvider = ({ children }) => {
       setToken(newToken);
       setUser(newUser);
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      
+      return newUser; // Return user data สำหรับ redirect
     } catch (error) {
       throw new Error(error.response?.data?.message || 'เข้าสู่ระบบไม่สำเร็จ');
     }
