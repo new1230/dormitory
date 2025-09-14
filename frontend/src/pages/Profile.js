@@ -18,10 +18,12 @@ const Profile = () => {
     mem_email: '',
     mem_tel: '',
     mem_addr: '',
+
     student_id: '',
     faculty: '',
     major: '',
     year: '',
+
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
@@ -34,23 +36,36 @@ const Profile = () => {
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
+
+    console.log('🔍 Profile Debug - User object:', user);
+    
+
     if (user) {
       setFormData({
         mem_name: user.mem_name || '',
         mem_email: user.mem_email || '',
         mem_tel: user.mem_tel || '',
         mem_addr: user.mem_addr || '',
+
         student_id: user.student_id || '',
         faculty: user.faculty || '',
         major: user.major || '',
         year: user.year || '',
+
         currentPassword: '',
         newPassword: '',
         confirmPassword: ''
       });
       
+
       if (user.mem_img) {
         const imageUrl = `http://localhost:5000/uploads/profiles/${user.mem_img}`;
+
+      console.log('🔍 Profile Debug - mem_img:', user.mem_img);
+      if (user.mem_img) {
+        const imageUrl = `http://localhost:5000/uploads/profiles/${user.mem_img}`;
+        console.log('🔍 Profile Debug - Setting image URL:', imageUrl);
+
         setImagePreview(imageUrl);
       }
     }
@@ -99,6 +114,7 @@ const Profile = () => {
       const updateData = {
         mem_name: formData.mem_name,
         mem_tel: formData.mem_tel,
+
         mem_addr: formData.mem_addr,
         student_id: formData.student_id,
         faculty: formData.faculty,
@@ -120,6 +136,21 @@ const Profile = () => {
       }));
 
     } catch (error) {
+
+        mem_addr: formData.mem_addr
+      };
+
+      const response = await axios.put('http://localhost:5000/api/profile/update', updateData);
+      console.log(response)
+      showSuccess('อัปเดตข้อมูลโปรไฟล์สำเร็จ');
+      setIsEditing(false);
+      
+      // รีเฟรชข้อมูลผู้ใช้
+      await refreshUser();
+      
+    } catch (error) {
+      console.error('Profile update error:', error);
+
       showError(error.response?.data?.message || 'เกิดข้อผิดพลาดในการอัปเดตข้อมูล');
     } finally {
       setLoading(false);
@@ -339,8 +370,7 @@ const Profile = () => {
                         />
                         <p className="text-xs text-gray-500 mt-1">ไม่สามารถเปลี่ยนอีเมลได้</p>
                       </div>
-
-                      {/* รหัสนักศึกษา */}
+      {/* รหัสนักศึกษา */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           รหัสนักศึกษา
@@ -405,6 +435,7 @@ const Profile = () => {
                           max={8}
                         />
                       </div>
+
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
