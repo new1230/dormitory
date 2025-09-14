@@ -11,6 +11,10 @@ const Register = () => {
     mem_password: '',
     confirmPassword: '',
     mem_card_id: '',
+    student_id: '',
+    faculty: '',
+    major: '',
+    year: '',
     mem_addr: '',
     mem_tel: ''
   });
@@ -174,6 +178,76 @@ const Register = () => {
             required
             pattern="[0-9]{13}"
             maxLength={13}
+          />
+        </div>
+
+         {/* รหัสนักศึกษา */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            รหัสนักศึกษา *
+          </label>
+          <input
+            type="text"
+            name="student_id"
+            value={formData.student_id || ''}
+            onChange={handleChange}
+            placeholder="123456789012 (12 หลัก)"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+            pattern="[0-9]{12}"
+            maxLength={12}
+          />
+        </div>
+
+           {/* คณะ */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            คณะ *
+          </label>
+          <input
+            type="text"
+            name="faculty"
+            value={formData.faculty || ''}
+            onChange={handleChange}
+            placeholder="เช่น วิศวกรรมศาสตร์"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+            maxLength={50}
+          />
+        </div>
+
+        {/* สาขา */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            สาขา *
+          </label>
+          <input
+            type="text"
+            name="major"
+            value={formData.major || ''}
+            onChange={handleChange}
+            placeholder="เช่น วิศวกรรมคอมพิวเตอร์"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+            maxLength={50}
+          />
+        </div>
+
+        {/* ชั้นปี */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            ชั้นปี *
+          </label>
+          <input
+            type="number"
+            name="year"
+            value={formData.year || ''}
+            onChange={handleChange}
+            placeholder="เช่น 1"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+            min={1}
+            max={8}
           />
         </div>
 

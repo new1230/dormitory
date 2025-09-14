@@ -429,6 +429,35 @@ const ManageRoomTypes = () => {
                 </div>
               )}
             </div>
+
+            {/* ตารางสำหรับขนาดหน้าจอใหญ่ขึ้น */}
+            <div className="hidden lg:block overflow-x-auto bg-white rounded-lg shadow p-6 mt-6">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่อ</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">อีเมล</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">สถานะ</th>
+                    <th className="px-6 py-3"></th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap">สมชาย ใจดี</td>
+                    <td className="px-6 py-4 whitespace-nowrap">somchai@email.com</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        ใช้งานอยู่
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <a href="#" className="text-indigo-600 hover:text-indigo-900">ดูรายละเอียด</a>
+                    </td>
+                  </tr>
+                  {/* เพิ่มแถวข้อมูลตามต้องการ */}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </PageTransition>

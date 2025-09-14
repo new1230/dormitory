@@ -16,7 +16,7 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8 */;
 
 --
 -- Database: `dorm`
@@ -73,7 +73,7 @@ CREATE TABLE `booking` (
   `total_price` decimal(10,2) DEFAULT NULL,
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `booking`
@@ -162,7 +162,7 @@ CREATE TABLE `member` (
   `mem_img` varchar(255) DEFAULT NULL,
   `mem_status` varchar(1) NOT NULL DEFAULT '1',
   `role` enum('Student','Manager','Admin') NOT NULL DEFAULT 'Student'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `member`
@@ -199,7 +199,7 @@ CREATE TABLE `meter_readings` (
   `recorded_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `notes` text COMMENT 'หมายเหตุเพิ่มเติม',
   `is_billed` tinyint(1) DEFAULT '0' COMMENT 'สร้างบิลแล้วหรือยัง'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='การจดมิเตอร์น้ำและไฟรายเดือน';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='การจดมิเตอร์น้ำและไฟรายเดือน';
 
 --
 -- Dumping data for table `meter_readings`
@@ -245,7 +245,7 @@ CREATE TABLE `monthly_bills` (
   `created_by` int(11) NOT NULL COMMENT 'ผู้สร้างบิล (mem_id)',
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_date` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='บิลค่าใช้จ่ายรายเดือน';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='บิลค่าใช้จ่ายรายเดือน';
 
 --
 -- Dumping data for table `monthly_bills`
@@ -279,7 +279,7 @@ CREATE TABLE `payment` (
   `receipt_no` varchar(50) DEFAULT NULL,
   `payment_status` enum('pending','completed','refunded','cancelled') NOT NULL DEFAULT 'pending',
   `notes` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
@@ -297,7 +297,7 @@ CREATE TABLE `room` (
   `current_tenant_id` int(11) DEFAULT NULL COMMENT 'ID ผู้เช่าปัจจุบัน',
   `description` varchar(255) DEFAULT NULL,
   `room_img` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `room`
@@ -420,7 +420,7 @@ CREATE TABLE `room_type` (
   `facilities` json DEFAULT NULL COMMENT 'สิ่งอำนวยความสะดวกเพิ่มเติม',
   `room_size` decimal(5,2) DEFAULT NULL COMMENT 'ขนาดห้อง (ตารางเมตร)',
   `is_active` varchar(1) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `room_type`
@@ -463,7 +463,7 @@ CREATE TABLE `stay` (
   `total_guests` int(11) NOT NULL DEFAULT '1',
   `stay_status` enum('active','completed','extended','terminated') NOT NULL DEFAULT 'active',
   `notes` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 

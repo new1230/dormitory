@@ -1,5 +1,5 @@
 import Navbar from '../components/Navbar';
-import ProfilePage from "../pages/profile";
+import ProfilePage from "../pages/Profile";
 
 const ProfileArea = () => {
   return (
