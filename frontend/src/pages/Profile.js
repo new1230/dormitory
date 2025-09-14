@@ -18,6 +18,12 @@ const Profile = () => {
     mem_email: '',
     mem_tel: '',
     mem_addr: '',
+
+    student_id: '',
+    faculty: '',
+    major: '',
+    year: '',
+
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
@@ -30,23 +36,36 @@ const Profile = () => {
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
+
     console.log('🔍 Profile Debug - User object:', user);
     
+
     if (user) {
       setFormData({
         mem_name: user.mem_name || '',
         mem_email: user.mem_email || '',
         mem_tel: user.mem_tel || '',
         mem_addr: user.mem_addr || '',
+
+        student_id: user.student_id || '',
+        faculty: user.faculty || '',
+        major: user.major || '',
+        year: user.year || '',
+
         currentPassword: '',
         newPassword: '',
         confirmPassword: ''
       });
       
+
+      if (user.mem_img) {
+        const imageUrl = `http://localhost:5000/uploads/profiles/${user.mem_img}`;
+
       console.log('🔍 Profile Debug - mem_img:', user.mem_img);
       if (user.mem_img) {
         const imageUrl = `http://localhost:5000/uploads/profiles/${user.mem_img}`;
         console.log('🔍 Profile Debug - Setting image URL:', imageUrl);
+
         setImagePreview(imageUrl);
       }
     }
@@ -95,6 +114,29 @@ const Profile = () => {
       const updateData = {
         mem_name: formData.mem_name,
         mem_tel: formData.mem_tel,
+
+        mem_addr: formData.mem_addr,
+        student_id: formData.student_id,
+        faculty: formData.faculty,
+        major: formData.major,
+        year: formData.year
+      };
+
+      await axios.put('http://localhost:5000/api/profile/update', updateData);
+      showSuccess('อัปเดตข้อมูลโปรไฟล์สำเร็จ');
+      setIsEditing(false);
+
+      // รีเฟรช user context
+      await refreshUser();
+
+      // อัปเดต formData ทันที เพื่อให้แสดงผลใหม่
+      setFormData(prev => ({
+        ...prev,
+        ...updateData
+      }));
+
+    } catch (error) {
+
         mem_addr: formData.mem_addr
       };
 
@@ -108,6 +150,7 @@ const Profile = () => {
       
     } catch (error) {
       console.error('Profile update error:', error);
+
       showError(error.response?.data?.message || 'เกิดข้อผิดพลาดในการอัปเดตข้อมูล');
     } finally {
       setLoading(false);
@@ -327,6 +370,72 @@ const Profile = () => {
                         />
                         <p className="text-xs text-gray-500 mt-1">ไม่สามารถเปลี่ยนอีเมลได้</p>
                       </div>
+      {/* รหัสนักศึกษา */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          รหัสนักศึกษา
+                        </label>
+                        <input
+                          type="text"
+                          name="student_id"
+                          value={formData.student_id}
+                          onChange={handleInputChange}
+                          disabled={!isEditing}
+                          className={`input-field ${!isEditing ? 'bg-gray-50' : ''}`}
+                          pattern="[0-9]{12}"
+                          maxLength={12}
+                        />
+                      </div>
+
+                      {/* คณะ */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          คณะ
+                        </label>
+                        <input
+                          type="text"
+                          name="faculty"
+                          value={formData.faculty}
+                          onChange={handleInputChange}
+                          disabled={!isEditing}
+                          className={`input-field ${!isEditing ? 'bg-gray-50' : ''}`}
+                          maxLength={50}
+                        />
+                      </div>
+
+                      {/* สาขา */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          สาขา
+                        </label>
+                        <input
+                          type="text"
+                          name="major"
+                          value={formData.major}
+                          onChange={handleInputChange}
+                          disabled={!isEditing}
+                          className={`input-field ${!isEditing ? 'bg-gray-50' : ''}`}
+                          maxLength={50}
+                        />
+                      </div>
+
+                      {/* ชั้นปี */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          ชั้นปี
+                        </label>
+                        <input
+                          type="number"
+                          name="year"
+                          value={formData.year}
+                          onChange={handleInputChange}
+                          disabled={!isEditing}
+                          className={`input-field ${!isEditing ? 'bg-gray-50' : ''}`}
+                          min={1}
+                          max={8}
+                        />
+                      </div>
+
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">

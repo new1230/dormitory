@@ -20,6 +20,7 @@ const MyBookings = () => {
     if (user) {
       fetchMyBookings();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const fetchMyBookings = async () => {

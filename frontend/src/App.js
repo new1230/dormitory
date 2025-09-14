@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route,  } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProfileProvider } from "./contexts/ProfileContext";
-import PageTransition from './components/PageTransition';
+
 import ProtectedRoute from './components/ProtectedRoute';
 //import Navbar from './components/Navbar';
 import Home from './Routes/Home';
@@ -12,7 +12,7 @@ import ForgotPassword from './Routes/ForgotPassword';
 import Dormitories from './Routes/Dormitories';
 import Profile from "./pages/Profile";
 import ActivityLog from "./pages/ActivityLog";
-import ManageRoomTypes from "./pages/ManageRoomTypes";
+
 import ManageRooms from "./pages/ManageRooms";
 import RoomTypesGallery from "./pages/RoomTypesGallery";
 import RoomDetailBooking from "./pages/RoomDetailBooking";
@@ -22,9 +22,15 @@ import Payment from "./pages/Payment";
 import MyBookings from "./pages/MyBookings";
 import ManageBookings from "./pages/ManageBookings";
 import ManageUsers from "./pages/ManageUsers";
-import RoomDetail from "./Routes/RoomDetail";
+
 import Room from "./Routes/Room";
 import MeterReading from "./pages/MeterReading";
+import StudentBills from "./pages/StudentBills";
+import PaymentPage from "./pages/PaymentPage";
+import BillApproval from "./pages/BillApproval";
+import ManagerDashboard from "./pages/ManagerDashboard";
+import StudentDashboard from "./pages/StudentDashboard";
+import Reports from "./pages/Reports";
 
 
 function App() {
@@ -114,19 +120,37 @@ function App() {
                 } />
 
                 {/* Student Routes */}
+                <Route path="/student/dashboard" element={
+                  <ProtectedRoute allowedRoles={['Student']}>
+                    <StudentDashboard />
+                  </ProtectedRoute>
+                } />
+                
                 <Route path="/bookings" element={
                   <ProtectedRoute allowedRoles={['Student']}>
                     <MyBookings />
                   </ProtectedRoute>
                 } />
                 
-                <Route path="/payments" element={
+                <Route path="/student-bills" element={
                   <ProtectedRoute allowedRoles={['Student']}>
-                    <div>บิลค่าใช้จ่าย (Student Only)</div>
+                    <StudentBills />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/payment/:billId" element={
+                  <ProtectedRoute allowedRoles={['Student']}>
+                    <PaymentPage />
                   </ProtectedRoute>
                 } />
 
                 {/* Manager Routes */}
+                <Route path="/manager/dashboard" element={
+                  <ProtectedRoute allowedRoles={['Manager', 'Admin']}>
+                    <ManagerDashboard />
+                  </ProtectedRoute>
+                } />
+                
                 <Route path="/manage-rooms" element={
                   <ProtectedRoute allowedRoles={['Manager', 'Admin']}>
                     <ManageRooms />
@@ -141,13 +165,19 @@ function App() {
                 
                 <Route path="/reports" element={
                   <ProtectedRoute allowedRoles={['Manager', 'Admin']}>
-                    <div>รายงาน (Manager/Admin)</div>
+                    <Reports />
                   </ProtectedRoute>
                 } />
                 
                 <Route path="/meter-reading" element={
                   <ProtectedRoute allowedRoles={['Manager', 'Admin']}>
                     <MeterReading />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/bill-approval" element={
+                  <ProtectedRoute allowedRoles={['Manager', 'Admin']}>
+                    <BillApproval />
                   </ProtectedRoute>
                 } />
 
@@ -172,7 +202,7 @@ function App() {
                 
                 <Route path="/admin/reports" element={
                   <ProtectedRoute allowedRoles={['Admin']}>
-                    <div>รายงานทั้งหมด (Admin Only)</div>
+                    <Reports />
                   </ProtectedRoute>
                 } />
               </Routes>

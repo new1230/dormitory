@@ -9,17 +9,18 @@ import { ToastContainer } from '../components/Notification';
 import axios from 'axios';
 
 const RoomTypesGallery = () => {
-  const { user, loading: authLoading } = useAuth();
-  const { notifications, showSuccess, showError } = useNotification();
+  const { loading: authLoading } = useAuth();
+  const { notifications, showError } = useNotification();
 
   const [roomTypes, setRoomTypes] = useState([]);
   const [roomStats, setRoomStats] = useState({});
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState('gallery'); // 'gallery' | 'stats'
+  const [viewMode, setViewMode] = useState('gallery');
 
   useEffect(() => {
     fetchRoomTypes();
     fetchRoomStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchRoomTypes = async () => {
@@ -84,14 +85,7 @@ const RoomTypesGallery = () => {
     return genders[gender] || gender;
   };
 
-  const getFurnishedText = (furnished) => {
-    const furnished_types = {
-      'fully': 'ครบครันทั้งหมด',
-      'partial': 'เฟอร์นิเจอร์พื้นฐาน',
-      'unfurnished': 'ห้องเปล่า'
-    };
-    return furnished_types[furnished] || furnished;
-  };
+
 
   if (authLoading || loading) {
     return (

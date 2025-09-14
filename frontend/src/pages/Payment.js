@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+
 import Navbar from '../components/Navbar';
 import PageTransition from '../components/PageTransition';
 import { LoadingSpinner, LoadingButton } from '../components/LoadingEffect';
@@ -11,14 +11,11 @@ import axios from 'axios';
 const Payment = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { notifications, showSuccess, showError, showWarning } = useNotification();
 
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60 * 60); // 60 นาที
-  const [paymentExpired, setPaymentExpired] = useState(false);
   const [paymentSlip, setPaymentSlip] = useState(null);
   const [slipPreview, setSlipPreview] = useState('');
 
@@ -33,25 +30,10 @@ const Payment = () => {
     }
     
     fetchBookingDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookingId]);
 
-  // Timer นับถอยหลัง
-  useEffect(() => {
-    if (booking && booking.payment_status === 'pending' && !paymentExpired) {
-      const timer = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            setPaymentExpired(true);
-            cancelBookingDueToTimeout();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
 
-      return () => clearInterval(timer);
-    }
-  }, [booking, paymentExpired]);
 
   const fetchBookingDetails = async () => {
     setLoading(true);
@@ -61,11 +43,9 @@ const Payment = () => {
       
       // ตรวจสอบสถานะการชำระเงิน
       if (response.data.payment_status === 'paid') {
-        setPaymentExpired(false);
-        setTimeLeft(0);
+        // สำเร็จแล้ว
       } else if (response.data.payment_status === 'uploaded') {
-        setPaymentExpired(false);
-        setTimeLeft(0);
+        // อัปโหลดแล้ว
       }
     } catch (error) {
       console.error('Failed to fetch booking:', error);
@@ -76,16 +56,7 @@ const Payment = () => {
     }
   };
 
-  const cancelBookingDueToTimeout = async () => {
-    try {
-      await axios.patch(`http://localhost:5000/api/bookings/${bookingId}/cancel`, {
-        reason: 'ยกเลิกอัตโนมัติเนื่องจากไม่ชำระเงินภายในเวลาที่กำหนด'
-      });
-      showError('การจองถูกยกเลิกเนื่องจากหมดเวลาชำระเงิน');
-    } catch (error) {
-      console.error('Auto cancel error:', error);
-    }
-  };
+
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -128,10 +99,6 @@ const Payment = () => {
 
       showSuccess('อัพโหลดสลิปสำเร็จ รอผู้จัดการตรวจสอบ');
       
-      // หยุดการนับถอยหลัง
-      setTimeLeft(0);
-      setPaymentExpired(false);
-      
       // รีเฟรชข้อมูลการจอง
       fetchBookingDetails();
     } catch (error) {
@@ -142,11 +109,7 @@ const Payment = () => {
     }
   };
 
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
+
 
   if (loading) {
     return (
@@ -190,18 +153,7 @@ const Payment = () => {
               <p className="text-gray-600">อัพโหลดหลักฐานการโอนเงิน</p>
             </div>
 
-            {/* Payment Timer */}
-            {booking.payment_status === 'pending' && !paymentExpired && (
-              <div className="bg-red-50 border border-red-200 p-6 rounded-lg mb-6">
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-red-900 mb-2">⏰ เวลาคงเหลือ</h3>
-                  <div className="text-4xl font-mono font-bold text-red-600 mb-2">
-                    {formatTime(timeLeft)}
-                  </div>
-                  <p className="text-red-700">หากไม่ชำระภายในเวลาที่กำหนด การจองจะถูกยกเลิกอัตโนมัติ</p>
-                </div>
-              </div>
-            )}
+
 
             {/* Payment Info */}
             <div className="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -253,15 +205,7 @@ const Payment = () => {
                   <h4 className="text-lg font-medium text-green-800 mb-2">ชำระเงินสำเร็จ</h4>
                   <p className="text-green-700">การจองของคุณได้รับการยืนยันแล้ว</p>
                 </div>
-              ) : paymentExpired ? (
-                <div className="text-center py-8">
-                  <div className="text-gray-500 text-6xl mb-4">⏰</div>
-                  <h4 className="text-lg font-medium text-gray-800 mb-2">หมดเวลาชำระเงิน</h4>
-                  <p className="text-gray-700">การจองถูกยกเลิกเนื่องจากไม่ชำระเงินภายในเวลาที่กำหนด</p>
-                  <button onClick={() => navigate('/dormitories')} className="mt-4 btn-primary">
-                    จองห้องใหม่
-                  </button>
-                </div>
+              
               ) : (
                 <div className="space-y-4">
                   <div>
@@ -296,7 +240,7 @@ const Payment = () => {
                   <LoadingButton
                     onClick={handleUploadSlip}
                     loading={uploading}
-                    disabled={!paymentSlip || paymentExpired}
+                    disabled={!paymentSlip}
                     className="w-full btn-primary text-lg py-3"
                   >
                     📤 อัพโหลดสลิป

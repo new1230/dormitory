@@ -1,21 +1,23 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { ProfileContext } from '../contexts/ProfileContext';
 import axios from 'axios';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
-  const { currentProfile } = useContext(ProfileContext);
+
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [bookingCount, setBookingCount] = useState(0);
   const [pendingBookings, setPendingBookings] = useState([]);
+  const [notifications, setNotifications] = useState({});
+
   
   // Fetch booking data for navbar display
   useEffect(() => {
     if (user) {
+      fetchNotifications();
       if (user.role === 'Student') {
         fetchBookingsForNav();
       } else if (user.role === 'Manager' || user.role === 'Admin') {
@@ -97,6 +99,20 @@ const Navbar = () => {
       console.error('Failed to fetch pending bookings for management:', error);
     }
   };
+
+  // ดึงข้อมูลแจ้งเตือนจาก API ใหม่
+  const fetchNotifications = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:5000/api/notifications/navbar', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      setNotifications(response.data);
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+    }
+  };
   
   // Navigation items สำหรับแต่ละบทบาท
   const getNavigationItems = () => {
@@ -133,7 +149,12 @@ const Navbar = () => {
               pendingCount: pendingBookings.length,
               bookingsData: pendingBookings
             },
-            { to: "/payments", label: "บิลค่าใช้จ่าย" }
+            { 
+              to: "/student-bills", 
+              label: "บิลค่าใช้จ่าย",
+              pendingCount: notifications.overdueBills || 0,
+              notificationStyle: notifications.overdueBills > 0 ? 'bg-red-500 text-white' : ''
+            }
           ],
           user: []
         };
@@ -152,6 +173,14 @@ const Navbar = () => {
               bookingsData: pendingBookings
             },
             { to: "/meter-reading", label: "จดมิเตอร์และบิล" },
+            { 
+              to: "/bill-approval", 
+              label: "อนุมัติการชำระ",
+              pendingCount: notifications.pendingApproval || 0,
+              notificationStyle: notifications.pendingApproval > 0 ? 'bg-yellow-500 text-white' : '',
+              overdueCount: notifications.overdueBills || 0,
+              overdueStyle: notifications.overdueBills > 0 ? 'bg-red-500 text-white' : ''
+            },
             { to: "/reports", label: "รายงาน" }
           ],
           user: []
@@ -171,6 +200,14 @@ const Navbar = () => {
               bookingsData: pendingBookings
             },
             { to: "/meter-reading", label: "จดมิเตอร์และบิล" },
+            { 
+              to: "/bill-approval", 
+              label: "อนุมัติการชำระ",
+              pendingCount: notifications.pendingApproval || 0,
+              notificationStyle: notifications.pendingApproval > 0 ? 'bg-yellow-500 text-white' : '',
+              overdueCount: notifications.overdueBills || 0,
+              overdueStyle: notifications.overdueBills > 0 ? 'bg-red-500 text-white' : ''
+            },
             { to: "/admin/users", label: "จัดการผู้ใช้" },
             { to: "/admin/reports", label: "รายงาน" },
           ],
@@ -211,7 +248,14 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="text-xl sm:text-2xl font-bold text-primary-600">
+          <Link 
+            to={user ? (
+              user.role === 'Student' ? '/student/dashboard' :
+              user.role === 'Manager' || user.role === 'Admin' ? '/manager/dashboard' :
+              '/'
+            ) : '/'} 
+            className="text-xl sm:text-2xl font-bold text-primary-600"
+          >
             หอพักนักศึกษา
           </Link>
 
@@ -235,8 +279,17 @@ const Navbar = () => {
                     </span>
                   )}
                   {item.pendingCount > 0 && (
-                    <span className="ml-1 px-1.5 py-0.5 bg-red-500 text-white text-xs rounded-full">
+                    <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-full ${
+                      item.notificationStyle || 'bg-red-500 text-white'
+                    }`}>
                       {item.pendingCount}
+                    </span>
+                  )}
+                  {item.overdueCount > 0 && (
+                    <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-full ${
+                      item.overdueStyle || 'bg-red-500 text-white'
+                    }`}>
+                      {item.overdueCount}
                     </span>
                   )}
                 </Link>

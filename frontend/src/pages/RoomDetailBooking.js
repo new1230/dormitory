@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Navbar from '../components/Navbar';
 import PageTransition from '../components/PageTransition';
-import { LoadingSpinner, LoadingButton } from '../components/LoadingEffect';
+import { LoadingSpinner } from '../components/LoadingEffect';
 import useNotification from '../hooks/useNotification';
 import { ToastContainer } from '../components/Notification';
 import axios from 'axios';
@@ -12,13 +12,12 @@ const RoomDetailBooking = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { notifications, showSuccess, showError, showWarning } = useNotification();
+  const { notifications, showError, showWarning } = useNotification();
 
   const [room, setRoom] = useState(null);
   const [roomImages, setRoomImages] = useState([]);
   const [roomTypeImages, setRoomTypeImages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [booking, setBooking] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const [bookingForm, setBookingForm] = useState({
@@ -31,6 +30,7 @@ const RoomDetailBooking = () => {
     if (roomId) {
       fetchRoomDetail();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId]);
 
   const fetchRoomDetail = async () => {
@@ -359,29 +359,7 @@ const RoomDetailBooking = () => {
                 </div>
 
                 {/* สิ่งอำนวยความสะดวก */}
-                {room.roomType?.facilities && (
-                  <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h3 className="font-bold text-gray-900 mb-4">🛏️ สิ่งอำนวยความสะดวก</h3>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      {Object.entries(room.roomType.facilities).map(([key, value]) => {
-                        const facilityText = getFacilityIcon(key, value);
-                        return facilityText ? (
-                          <div key={key} className="flex items-center text-green-600">
-                            {facilityText}
-                          </div>
-                        ) : null;
-                      })}
-                      
-                      {/* พื้นฐาน */}
-                      {room.roomType.air_condition && (
-                        <div className="flex items-center text-blue-600">❄️ เครื่องปรับอากาศ</div>
-                      )}
-                      {room.roomType.fan && !room.roomType.air_condition && (
-                        <div className="flex items-center text-green-600">🌀 พัดลม</div>
-                      )}
-                    </div>
-                  </div>
-                )}
+               
 
                 {/* ฟอร์มจอง */}
                 <div className="bg-white p-6 rounded-lg shadow-md">
@@ -453,13 +431,12 @@ const RoomDetailBooking = () => {
                         />
                       </div>
 
-                      <LoadingButton
+                      <button
                         type="submit"
-                        loading={booking}
                         className="w-full btn-primary text-lg py-3"
                       >
                         🏠 จองห้องนี้
-                      </LoadingButton>
+                      </button>
                       </form>
                     </div>
                   ) : (

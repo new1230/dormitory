@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
 import PageTransition from '../components/PageTransition';
 import { LoadingSpinner } from '../components/LoadingEffect';
 import useNotification from '../hooks/useNotification';
@@ -33,6 +32,7 @@ const Dormitories = () => {
 
   useEffect(() => {
     fetchRoomTypes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchRoomTypes = async () => {

@@ -86,7 +86,7 @@ const MonthlyBill = sequelize.define('MonthlyBill', {
     comment: 'วันครบกำหนดชำระ'
   },
   bill_status: {
-    type: DataTypes.ENUM('draft', 'issued', 'paid', 'overdue', 'cancelled'),
+    type: DataTypes.ENUM('draft', 'issued', 'pending_approval', 'paid', 'overdue', 'cancelled'),
     defaultValue: 'draft'
   },
   issued_date: {
@@ -96,6 +96,38 @@ const MonthlyBill = sequelize.define('MonthlyBill', {
   paid_date: {
     type: DataTypes.DATE,
     comment: 'วันที่ชำระ'
+  },
+  payment_slip_url: {
+    type: DataTypes.STRING(255),
+    comment: 'ไฟล์สลิปการชำระ'
+  },
+  payment_slip_uploaded_at: {
+    type: DataTypes.DATE,
+    comment: 'วันที่อัปโหลดสลิป'
+  },
+  approved_by: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'member',
+      key: 'mem_id'
+    },
+    comment: 'ผู้อนุมัติ'
+  },
+  rejected_by: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'member',
+      key: 'mem_id'
+    },
+    comment: 'ผู้ปฏิเสธ'
+  },
+  rejected_at: {
+    type: DataTypes.DATE,
+    comment: 'วันที่ปฏิเสธ'
+  },
+  rejection_reason: {
+    type: DataTypes.TEXT,
+    comment: 'เหตุผลการปฏิเสธ'
   },
   created_by: {
     type: DataTypes.INTEGER,
@@ -160,6 +192,16 @@ MonthlyBill.associate = (models) => {
     foreignKey: 'created_by',
     targetKey: 'mem_id',
     as: 'creator'
+  });
+  MonthlyBill.belongsTo(models.User, {
+    foreignKey: 'approved_by',
+    targetKey: 'mem_id',
+    as: 'approver'
+  });
+  MonthlyBill.belongsTo(models.User, {
+    foreignKey: 'rejected_by',
+    targetKey: 'mem_id',
+    as: 'rejecter'
   });
 };
 

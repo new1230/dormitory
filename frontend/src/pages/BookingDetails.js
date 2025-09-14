@@ -30,6 +30,7 @@ const BookingDetails = () => {
     }
     
     fetchBookingDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookingId]);
 
   // Timer นับถอยหลัง
@@ -48,6 +49,7 @@ const BookingDetails = () => {
 
       return () => clearInterval(timer);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [booking, paymentExpired]);
 
   const fetchBookingDetails = async () => {

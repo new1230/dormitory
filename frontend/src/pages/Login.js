@@ -15,8 +15,18 @@ const Login = () => {
     e.preventDefault();
     setError('');
     try {
-      await login(email, password, rememberMe);
-      navigate('/dormitories');
+      const userData = await login(email, password, rememberMe);
+      
+      // บังคับให้ dashboard เป็นหน้าหลักของแต่ละ user
+      if (userData?.role === 'Student') {
+        navigate('/student/dashboard', { replace: true });
+      } else if (userData?.role === 'Manager') {
+        navigate('/manager/dashboard', { replace: true });
+      } else if (userData?.role === 'Admin') {
+        navigate('/manager/dashboard', { replace: true }); // Admin ใช้ dashboard เดียวกับ Manager
+      } else {
+        navigate('/student/dashboard', { replace: true }); // fallback เป็น student dashboard
+      }
     } catch (err) {
       setError(err.message);
     }

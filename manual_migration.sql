@@ -1,0 +1,29 @@
+-- คำสั่ง SQL สำหรับแก้ไข booking table
+-- เปิดโปรแกรม phpMyAdmin หรือ MySQL Workbench แล้วรันคำสั่งเหล่านี้
+
+USE dorm;
+
+-- ตรวจสอบโครงสร้างตารางปัจจุบัน
+DESCRIBE booking;
+
+-- เพิ่มคอลัมน์ที่ขาดหายไป
+ALTER TABLE `booking` ADD COLUMN `contract_accepted` TINYINT(1) DEFAULT 0 COMMENT 'สถานะการยอมรับสัญญา';
+ALTER TABLE `booking` ADD COLUMN `contract_accepted_at` DATETIME NULL COMMENT 'วันที่ยอมรับสัญญา';
+ALTER TABLE `booking` ADD COLUMN `payment_slip_url` VARCHAR(255) NULL COMMENT 'URL หลักฐานการชำระเงิน';
+ALTER TABLE `booking` ADD COLUMN `payment_slip_uploaded_at` DATETIME NULL COMMENT 'วันที่อัปโหลดหลักฐาน';
+ALTER TABLE `booking` ADD COLUMN `payment_deadline` DATETIME NULL COMMENT 'กำหนดเวลาชำระเงิน';
+ALTER TABLE `booking` ADD COLUMN `manager_approved_at` DATETIME NULL COMMENT 'วันที่ผู้จัดการอนุมัติ';
+ALTER TABLE `booking` ADD COLUMN `manager_approved_by` INT(11) NULL COMMENT 'ผู้จัดการที่อนุมัติ';
+ALTER TABLE `booking` ADD COLUMN `total_price` DECIMAL(10,2) NULL COMMENT 'ราคารวมทั้งหมด';
+ALTER TABLE `booking` ADD COLUMN `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'วันที่สร้างระเบียน';
+ALTER TABLE `booking` ADD COLUMN `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'วันที่อัปเดตระเบียน';
+
+-- เพิ่ม Foreign Key สำหรับ manager_approved_by
+ALTER TABLE `booking` ADD CONSTRAINT `fk_booking_manager` FOREIGN KEY (`manager_approved_by`) REFERENCES `member` (`mem_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- อัปเดตข้อมูลเก่าให้มี timestamps
+UPDATE `booking` SET `createdAt` = `booking_date`, `updatedAt` = `booking_date` WHERE `createdAt` IS NULL OR `updatedAt` IS NULL;
+
+-- ตรวจสอบผลลัพธ์
+DESCRIBE booking;
+SELECT 'Migration completed successfully!' as status;
