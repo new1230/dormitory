@@ -14,6 +14,7 @@ import Profile from "./pages/Profile";
 import ActivityLog from "./pages/ActivityLog";
 
 import ManageRooms from "./pages/ManageRooms";
+import RoomGallery from "./pages/RoomGallery";
 import RoomTypesGallery from "./pages/RoomTypesGallery";
 import RoomDetailBooking from "./pages/RoomDetailBooking";
 import BookingContract from "./pages/BookingContract";
@@ -97,6 +98,7 @@ function App() {
                 } />
                 
                 <Route path="/dormitories" element={<Dormitories />} />
+                <Route path="/rooms" element={<RoomGallery />} />
                 
                 <Route path="/room-detail/:roomId" element={<RoomDetailBooking />} />
                 

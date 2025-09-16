@@ -135,6 +135,10 @@ router.post('/register', [
   body('mem_card_id').isLength({ min: 13, max: 13 }).withMessage('เลขบัตรประชาชนต้องมี 13 หลัก').isNumeric().withMessage('เลขบัตรประชาชนต้องเป็นตัวเลข'),
   body('mem_addr').notEmpty().withMessage('ที่อยู่จำเป็น').isLength({ max: 255 }).withMessage('ที่อยู่ยาวเกินไป'),
   body('mem_tel').notEmpty().withMessage('เบอร์โทรศัพท์จำเป็น').isLength({ max: 20 }).withMessage('เบอร์โทรศัพท์ยาวเกินไป'),
+  body('student_id').optional().isLength({ min: 8, max: 20 }).withMessage('รหัสนักศึกษาต้องมี 8-20 ตัวอักษร'),
+  body('faculty').optional().isLength({ max: 100 }).withMessage('ชื่อคณะยาวเกินไป'),
+  body('major').optional().isLength({ max: 100 }).withMessage('ชื่อสาขายาวเกินไป'),
+  body('year').optional().isInt({ min: 1, max: 8 }).withMessage('ชั้นปีต้องเป็น 1-8'),
   body('role').optional().isIn(['Student', 'Manager', 'Admin']).withMessage('บทบาทไม่ถูกต้อง')
 ], async (req, res) => {
   try {
@@ -160,6 +164,10 @@ router.post('/register', [
       mem_card_id, 
       mem_addr, 
       mem_tel, 
+      student_id,
+      faculty,
+      major,
+      year,
       role = 'Student' 
     } = req.body;
 
@@ -185,6 +193,10 @@ router.post('/register', [
       mem_card_id,
       mem_addr,
       mem_tel,
+      student_id: student_id || null,
+      faculty: faculty || null,
+      major: major || null,
+      year: year || null,
       mem_status: '1', // เปิดใช้งาน
       role: role // ใช้ role ที่ส่งมา หรือ 'Student' เป็นค่าเริ่มต้น
     });

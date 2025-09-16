@@ -192,14 +192,7 @@ router.post('/', authenticateToken, requireManagerOrAdmin, async (req, res) => {
       });
     }
 
-    // ตรวจสอบชื่อซ้ำ
-    const existingType = await RoomType.findOne({ 
-      where: { room_type_name: room_type_name.trim() } 
-    });
-
-    if (existingType) {
-      return res.status(400).json({ message: 'ชื่อประเภทห้องนี้มีอยู่แล้ว' });
-    }
+    // อนุญาตให้ชื่อประเภทห้องซ้ำกันได้
 
     // เตรียมข้อมูลสำหรับบันทึก
     const roomTypeData = {

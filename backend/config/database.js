@@ -14,7 +14,7 @@ const sequelize = new Sequelize({
   port: process.env.DB_PORT || 3306,
   database: process.env.DB_NAME || 'dorm',
   username: process.env.DB_USER || 'root',
-  password: process.env.DB_PASS || '',
+  password: process.env.DB_PASS || '12345678',
   logging: process.env.NODE_ENV === 'development' ? false : false // ปิด logging
 });
 

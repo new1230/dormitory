@@ -401,62 +401,6 @@ const BookingDetails = () => {
               )}
             </div>
 
-            {/* Check-in Card for Approved Bookings */}
-            {booking.deposit_status === 'paid' && booking.booking_status === 'approved' && (
-              <div className="bg-white border-2 border-dashed border-gray-300 p-6 rounded-lg mb-6">
-                <h3 className="font-bold text-gray-900 mb-4 text-center">🎫 บัตรเข้าพัก</h3>
-                
-                <div className="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
-                  <div className="text-center mb-4">
-                    <div className="text-2xl font-bold text-gray-900">#{booking.booking_id || bookingData?.booking_id}</div>
-                    <div className="text-sm text-gray-600">รหัสการจอง</div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <div className="font-semibold text-gray-700">ชื่อผู้เข้าพัก</div>
-                      <div className="text-gray-900">
-                        {booking.member?.mem_name || 
-                         user?.mem_name || 
-                         `${user?.firstName || ''} ${user?.lastName || ''}`.trim()}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-700">รหัสบัตรประชาชน</div>
-                      <div className="text-gray-900">
-                        {booking.member?.mem_card_id || 
-                         user?.mem_card_id || 'N/A'}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-700">ห้อง</div>
-                      <div className="text-gray-900 font-bold">{roomData?.room_number}</div>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-700">ประเภท</div>
-                      <div className="text-gray-900">{roomData?.roomType?.room_type_name}</div>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-700">วันเข้าพัก</div>
-                      <div className="text-gray-900">{new Date(booking.check_in_date || bookingData?.check_in_date).toLocaleDateString('th-TH')}</div>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-700">วันออก</div>
-                      <div className="text-gray-900">{new Date(booking.check_out_date || bookingData?.check_out_date).toLocaleDateString('th-TH')}</div>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-4 pt-4 border-t border-gray-200 text-center">
-                    <div className="text-xs text-gray-500">
-                      โปรดแสดงหน้านี้แก่เจ้าหน้าที่เมื่อเข้าหอพัก
-                    </div>
-                    <div className="text-xs text-gray-400 mt-1">
-                      Approved on: {booking.manager_approved_at ? new Date(booking.manager_approved_at).toLocaleString('th-TH') : 'N/A'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Payment Button */}
             {booking.deposit_status === 'none' && booking.booking_status === 'pending' && !paymentExpired && (

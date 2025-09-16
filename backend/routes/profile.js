@@ -75,7 +75,15 @@ const logUserActivity = async (userId, action, details = {}) => {
 // PUT /api/profile/update - อัปเดตข้อมูลโปรไฟล์
 router.put('/update', authenticateToken, async (req, res) => {
   try {
-    const { mem_name, mem_tel, mem_addr } = req.body;
+    const { 
+      mem_name, 
+      mem_tel, 
+      mem_addr, 
+      student_id, 
+      faculty, 
+      major, 
+      year 
+    } = req.body;
 
     // ตรวจสอบข้อมูลที่จำเป็น
     if (!mem_name || !mem_tel || !mem_addr) {
@@ -88,12 +96,24 @@ router.put('/update', authenticateToken, async (req, res) => {
       return res.status(400).json({ message: 'เบอร์โทรศัพท์ต้องเป็นตัวเลข 10 หลัก' });
     }
 
-    // อัปเดตข้อมูล
-    await User.update({
+    // เตรียมข้อมูลสำหรับอัปเดต
+    const updateData = {
       mem_name,
       mem_tel,
       mem_addr
-    }, {
+    };
+
+    // เพิ่มข้อมูลนักศึกษาเฉพาะเมื่อ role = 'Student'
+    const user = await User.findByPk(req.user.mem_id);
+    if (user && user.role === 'Student') {
+      if (student_id !== undefined) updateData.student_id = student_id;
+      if (faculty !== undefined) updateData.faculty = faculty;
+      if (major !== undefined) updateData.major = major;
+      if (year !== undefined) updateData.year = year;
+    }
+
+    // อัปเดตข้อมูล
+    await User.update(updateData, {
       where: { mem_id: req.user.mem_id }
     });
 
@@ -101,7 +121,7 @@ router.put('/update', authenticateToken, async (req, res) => {
     await logUserActivity(req.user.mem_id, 'UPDATE_PROFILE', {
       userAgent: req.headers['user-agent'],
       ipAddress: req.ip,
-      changes: { mem_name, mem_tel, mem_addr }
+      changes: updateData
     });
 
     res.json({ message: 'อัปเดตข้อมูลโปรไฟล์สำเร็จ' });

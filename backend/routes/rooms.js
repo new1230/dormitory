@@ -229,7 +229,24 @@ router.get('/', authenticateToken, async (req, res) => {
       include: [{
         model: RoomType,
         as: 'roomType',
-        attributes: ['room_type_name', 'capacity', 'price_per_month']
+        attributes: [
+          'room_type_name', 
+          'capacity', 
+          'price_per_month',
+          'price_per_semester',
+          'water_rate',
+          'electricity_rate',
+          'payment_due_day',
+          'room_style',
+          'gender_allowed',
+          'air_condition',
+          'fan',
+          'furnished',
+          'room_category',
+          'room_size',
+          'facilities',
+          'description'
+        ]
       }],
       order: [['room_number', 'ASC']]
     });
@@ -401,16 +418,19 @@ router.delete('/:id', authenticateToken, requireManagerOrAdmin, async (req, res)
       return res.status(404).json({ message: 'ไม่พบห้องนี้' });
     }
 
-    // TODO: ตรวจสอบว่ามีการจองที่ใช้ห้องนี้อยู่หรือไม่
-    // const bookingsCount = await Booking.count({
-    //   where: { room_id: roomId }
-    // });
+    // ตรวจสอบว่าห้องมีผู้เช่าอยู่หรือไม่
+    if (room.current_tenant_id) {
+      return res.status(400).json({ 
+        message: 'ไม่สามารถลบได้ เนื่องจากมีผู้เช่าอยู่ในห้องนี้' 
+      });
+    }
 
-    // if (bookingsCount > 0) {
-    //   return res.status(400).json({ 
-    //     message: `ไม่สามารถลบได้ มีการจอง ${bookingsCount} รายการที่ใช้ห้องนี้อยู่` 
-    //   });
-    // }
+    // ตรวจสอบว่าห้องมีสถานะเป็น "มีผู้เช่า" หรือไม่
+    if (room.status === '3') {
+      return res.status(400).json({ 
+        message: 'ไม่สามารถลบได้ เนื่องจากห้องมีผู้เช่าอยู่' 
+      });
+    }
 
     // ลบห้อง
     await Room.destroy({

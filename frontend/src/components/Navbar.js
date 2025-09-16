@@ -120,7 +120,8 @@ const Navbar = () => {
       // Guest navigation
       return {
         main: [
-          { to: "/dormitories", label: "ห้องพัก" }
+          { to: "/rooms", label: "ห้องพัก" },
+          { to: "/dormitories", label: "หอพัก" }
         ],
         auth: [
           { to: "/login", label: "เข้าสู่ระบบ", type: "button" },
@@ -131,6 +132,7 @@ const Navbar = () => {
     // Base navigation for logged-in users
     const baseNav = {
       main: [
+        { to: "/rooms", label: "ห้องพัก" },
         { to: "/dormitories", label: "หอพัก" }
       ],
       user: []

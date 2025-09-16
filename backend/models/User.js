@@ -53,6 +53,30 @@ const User = sequelize.define('Member', {
     type: DataTypes.ENUM('Student', 'Manager', 'Admin'),
     allowNull: false,
     defaultValue: 'Student'
+  },
+  student_id: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+    comment: 'รหัสนักศึกษา'
+  },
+  faculty: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    comment: 'คณะ'
+  },
+  major: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    comment: 'สาขา'
+  },
+  year: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    validate: {
+      min: 1,
+      max: 8
+    },
+    comment: 'ชั้นปี (1-8)'
   }
 }, {
   tableName: 'member',
