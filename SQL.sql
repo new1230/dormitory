@@ -3,20 +3,20 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 19, 2025 at 08:37 AM
+-- Generation Time: Sep 16, 2025 at 11:27 AM
 -- Server version: 8.0.17
 -- PHP Version: 7.3.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
-SET time_zone = "+07:00";
+SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Database: `dorm`
@@ -73,7 +73,7 @@ CREATE TABLE `booking` (
   `total_price` decimal(10,2) DEFAULT NULL,
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `booking`
@@ -143,7 +143,14 @@ INSERT INTO `login_history` (`id`, `member_id`, `login_time`, `ip_address`, `use
 (14, 6, '2025-08-19 08:07:17', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36', '{\"browser\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36\", \"platform\": \"Unknown\", \"timestamp\": \"2025-08-19T08:07:17.599Z\"}', 'success', NULL),
 (15, 1, '2025-08-19 08:07:37', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36', '{\"browser\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36\", \"platform\": \"Unknown\", \"timestamp\": \"2025-08-19T08:07:37.322Z\"}', 'success', NULL),
 (16, 6, '2025-08-19 08:07:48', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36', '{\"browser\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36\", \"platform\": \"Unknown\", \"timestamp\": \"2025-08-19T08:07:48.527Z\"}', 'success', NULL),
-(17, 1, '2025-08-19 08:08:06', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36', '{\"browser\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36\", \"platform\": \"Unknown\", \"timestamp\": \"2025-08-19T08:08:06.453Z\"}', 'success', NULL);
+(17, 1, '2025-08-19 08:08:06', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36', '{\"browser\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36\", \"platform\": \"Unknown\", \"timestamp\": \"2025-08-19T08:08:06.453Z\"}', 'success', NULL),
+(18, 1, '2025-09-16 06:11:47', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '{\"browser\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\", \"platform\": \"Unknown\", \"timestamp\": \"2025-09-16T06:11:47.154Z\"}', 'failed', 'Wrong password'),
+(19, 1, '2025-09-16 06:11:54', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '{\"browser\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\", \"platform\": \"Unknown\", \"timestamp\": \"2025-09-16T06:11:54.553Z\"}', 'failed', 'Wrong password'),
+(20, 2, '2025-09-16 06:12:04', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '{\"browser\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\", \"platform\": \"Unknown\", \"timestamp\": \"2025-09-16T06:12:04.801Z\"}', 'failed', 'Wrong password'),
+(21, 2, '2025-09-16 06:12:11', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '{\"browser\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\", \"platform\": \"Unknown\", \"timestamp\": \"2025-09-16T06:12:11.437Z\"}', 'success', NULL),
+(22, 1, '2025-09-16 06:12:21', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '{\"browser\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\", \"platform\": \"Unknown\", \"timestamp\": \"2025-09-16T06:12:21.026Z\"}', 'success', NULL),
+(23, 1, '2025-09-16 06:14:14', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '{\"browser\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\", \"platform\": \"Unknown\", \"timestamp\": \"2025-09-16T06:14:14.600Z\"}', 'success', NULL),
+(24, 1, '2025-09-16 06:58:23', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '{\"browser\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\", \"platform\": \"Unknown\", \"timestamp\": \"2025-09-16T06:58:23.454Z\"}', 'success', NULL);
 
 -- --------------------------------------------------------
 
@@ -159,22 +166,26 @@ CREATE TABLE `member` (
   `mem_addr` text NOT NULL,
   `mem_email` varchar(100) NOT NULL,
   `mem_tel` varchar(20) NOT NULL,
+  `student_id` varchar(20) DEFAULT NULL COMMENT 'รหัสนักศึกษา',
+  `faculty` varchar(100) DEFAULT NULL COMMENT 'คณะ',
+  `major` varchar(100) DEFAULT NULL COMMENT 'สาขา',
+  `year` int(2) DEFAULT NULL COMMENT 'ชั้นปี (1-8)',
   `mem_img` varchar(255) DEFAULT NULL,
   `mem_status` varchar(1) NOT NULL DEFAULT '1',
   `role` enum('Student','Manager','Admin') NOT NULL DEFAULT 'Student'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `member`
 --
 
-INSERT INTO `member` (`mem_id`, `mem_password`, `mem_name`, `mem_card_id`, `mem_addr`, `mem_email`, `mem_tel`, `mem_img`, `mem_status`, `role`) VALUES
-(1, '$2a$10$CFG4OmkKQS2PoBBhh47Nqu/D5WurFw4.VAw/uUdfK476g0mDE8/2C', 'ผู้ดูแลระบบ', '1234567890123', '123 ถนนมหาวิทยาลัย กรุงเทพฯ 10400', 'admin@dormitory.com', '0812345678', NULL, '1', 'Admin'),
-(2, '$2a$10$CFG4OmkKQS2PoBBhh47Nqu/D5WurFw4.VAw/uUdfK476g0mDE8/2C', 'ผู้จัดการหอพัก', '1234567890124', '456 ถนนการจัดการ กรุงเทพฯ 10400', 'manager@dormitory.com', '0823456789', NULL, '1', 'Manager'),
-(3, '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'นายนักศึกษา ตัวอย่าง', '1234567890125', '789 ถนนนักศึกษา กรุงเทพฯ 10400', 'student@dormitory.com', '0834567890', NULL, '1', 'Student'),
-(4, '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'นางสาวศิริ วิทยาลัย', '1234567890126', '101 ถนนอุดมศึกษา กรุงเทพฯ 10400', 'siri.wit@student.ac.th', '0845678901', NULL, '1', 'Student'),
-(5, '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'นายสมชาย เรียนดี', '1234567890127', '202 ถนนความรู้ กรุงเทพฯ 10400', 'somchai.rd@student.ac.th', '0856789012', NULL, '1', 'Student'),
-(6, '$2a$10$CFG4OmkKQS2PoBBhh47Nqu/D5WurFw4.VAw/uUdfK476g0mDE8/2C', 'hhh sss', '1379900099929', 'ss', 'hhh@hhh.hhh', '0850150026', 'profile-6-1755539174644-629127590.png', '1', 'Student');
+INSERT INTO `member` (`mem_id`, `mem_password`, `mem_name`, `mem_card_id`, `mem_addr`, `mem_email`, `mem_tel`, `student_id`, `faculty`, `major`, `year`, `mem_img`, `mem_status`, `role`) VALUES
+(1, '$2a$10$CFG4OmkKQS2PoBBhh47Nqu/D5WurFw4.VAw/uUdfK476g0mDE8/2C', 'ผู้ดูแลระบบ', '1234567890123', '123 ถนนมหาวิทยาลัย กรุงเทพฯ 10400', 'admin@dormitory.com', '0812345678', NULL, NULL, NULL, NULL, NULL, '1', 'Admin'),
+(2, '$2a$10$CFG4OmkKQS2PoBBhh47Nqu/D5WurFw4.VAw/uUdfK476g0mDE8/2C', 'ผู้จัดการหอพัก', '1234567890124', '456 ถนนการจัดการ กรุงเทพฯ 10400', 'manager@dormitory.com', '0823456789', NULL, NULL, NULL, NULL, NULL, '1', 'Manager'),
+(3, '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'นายนักศึกษา ตัวอย่าง', '1234567890125', '789 ถนนนักศึกษา กรุงเทพฯ 10400', 'student@dormitory.com', '0834567890', '1234567890125', 'คณะวิศวกรรมศาสตร์', 'วิศวกรรมคอมพิวเตอร์', 3, NULL, '1', 'Student'),
+(4, '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'นางสาวศิริ วิทยาลัย', '1234567890126', '101 ถนนอุดมศึกษา กรุงเทพฯ 10400', 'siri.wit@student.ac.th', '0845678901', '1234567890126', 'คณะบริหารธุรกิจ', 'การจัดการ', 2, NULL, '1', 'Student'),
+(5, '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'นายสมชาย เรียนดี', '1234567890127', '202 ถนนความรู้ กรุงเทพฯ 10400', 'somchai.rd@student.ac.th', '0856789012', '1234567890127', 'คณะวิทยาศาสตร์', 'วิทยาการคอมพิวเตอร์', 4, NULL, '1', 'Student'),
+(6, '$2a$10$CFG4OmkKQS2PoBBhh47Nqu/D5WurFw4.VAw/uUdfK476g0mDE8/2C', 'hhh sss', '1379900099929', 'ss', 'hhh@hhh.hhh', '0850150026', '1379900099929', 'คณะเทคโนโลยีสารสนเทศ', 'เทคโนโลยีสารสนเทศ', 1, 'profile-6-1755539174644-629127590.png', '1', 'Student');
 
 -- --------------------------------------------------------
 
@@ -199,7 +210,7 @@ CREATE TABLE `meter_readings` (
   `recorded_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `notes` text COMMENT 'หมายเหตุเพิ่มเติม',
   `is_billed` tinyint(1) DEFAULT '0' COMMENT 'สร้างบิลแล้วหรือยัง'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='การจดมิเตอร์น้ำและไฟรายเดือน';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='การจดมิเตอร์น้ำและไฟรายเดือน';
 
 --
 -- Dumping data for table `meter_readings`
@@ -210,7 +221,8 @@ INSERT INTO `meter_readings` (`reading_id`, `room_id`, `reading_month`, `reading
 (2, 7, 7, 2025, '98.75', '102.00', '2300.25', '2420.75', '0.00', NULL, NULL, NULL, 2, '2025-08-19 07:57:21', NULL, 0),
 (3, 13, 7, 2025, '150.00', '158.50', '3100.00', '3250.25', '0.00', NULL, NULL, NULL, 2, '2025-08-19 07:57:21', NULL, 0),
 (4, 3, 8, 2025, '105.25', '170.00', '2650.50', '3000.00', '0.00', '', NULL, NULL, 1, '2025-08-19 08:03:37', '', 1),
-(7, 1, 8, 2025, '0.00', '50.00', '0.00', '50.00', '0.00', '', NULL, NULL, 1, '2025-08-19 08:07:11', '', 1);
+(7, 1, 8, 2025, '0.00', '50.00', '0.00', '50.00', '0.00', '', NULL, NULL, 1, '2025-08-19 08:07:11', '', 1),
+(8, 13, 9, 2025, '0.00', '50.00', '0.00', '450.00', '0.00', '', NULL, NULL, 1, '2025-09-16 07:09:10', '', 0);
 
 -- --------------------------------------------------------
 
@@ -245,7 +257,7 @@ CREATE TABLE `monthly_bills` (
   `created_by` int(11) NOT NULL COMMENT 'ผู้สร้างบิล (mem_id)',
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_date` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='บิลค่าใช้จ่ายรายเดือน';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='บิลค่าใช้จ่ายรายเดือน';
 
 --
 -- Dumping data for table `monthly_bills`
@@ -279,7 +291,7 @@ CREATE TABLE `payment` (
   `receipt_no` varchar(50) DEFAULT NULL,
   `payment_status` enum('pending','completed','refunded','cancelled') NOT NULL DEFAULT 'pending',
   `notes` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -296,31 +308,45 @@ CREATE TABLE `room` (
   `contract_end` date DEFAULT NULL COMMENT 'วันที่สิ้นสุดสัญญา',
   `current_tenant_id` int(11) DEFAULT NULL COMMENT 'ID ผู้เช่าปัจจุบัน',
   `description` varchar(255) DEFAULT NULL,
-  `room_img` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `room_img` varchar(255) DEFAULT NULL,
+  `price_per_month` decimal(10,2) DEFAULT '0.00' COMMENT 'ค่าเช่าต่อเดือน (บาท)',
+  `price_per_semester` decimal(10,2) DEFAULT '0.00' COMMENT 'ค่าเช่าต่อเทอม (บาท)',
+  `water_rate` decimal(8,2) DEFAULT '0.00' COMMENT 'ค่าน้ำต่อหน่วย (บาท)',
+  `electricity_rate` decimal(8,2) DEFAULT '0.00' COMMENT 'ค่าไฟต่อหน่วย (บาท)',
+  `payment_due_day` int(11) DEFAULT '5' COMMENT 'วันที่ครบกำหนดชำระ (วันที่ของเดือน)',
+  `room_style` enum('single','double','triple','quad','dormitory') DEFAULT 'single' COMMENT 'รูปแบบห้อง',
+  `gender_allowed` enum('male','female','mixed') DEFAULT 'mixed' COMMENT 'เพศที่อนุญาต',
+  `air_condition` tinyint(1) DEFAULT '0' COMMENT 'มีแอร์',
+  `fan` tinyint(1) DEFAULT '1' COMMENT 'มีพัดลม',
+  `furnished` enum('fully','partial','unfurnished') DEFAULT 'partial' COMMENT 'เฟอร์นิเจอร์',
+  `room_category` enum('standard','premium','deluxe','vip') DEFAULT 'standard' COMMENT 'ระดับห้อง',
+  `room_size` varchar(50) DEFAULT NULL COMMENT 'ขนาดห้อง (ตร.ม.)',
+  `facilities` json DEFAULT NULL COMMENT 'สิ่งอำนวยความสะดวก'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `room`
 --
 
-INSERT INTO `room` (`room_id`, `room_type_id`, `room_number`, `status`, `contract_start`, `contract_end`, `current_tenant_id`, `description`, `room_img`) VALUES
-(1, 1, '101', '0', '2025-08-20', '2026-01-14', 6, 'ห้องเดี่ยวชั้น 1 วิวสวน', NULL),
-(2, 1, '102', '1', NULL, NULL, NULL, 'ห้องเดี่ยวชั้น 1 วิวลานจอดรถ', NULL),
-(3, 1, '103', '0', '2024-06-01', '2025-05-31', 3, 'ห้องเดี่ยวชั้น 1 วิวสวน', NULL),
-(4, 1, '104', '1', NULL, NULL, NULL, 'ห้องเดี่ยวชั้น 1 วิวถนน', NULL),
-(5, 2, '201', '1', NULL, NULL, NULL, 'ห้องคู่ชั้น 2 วิวสวน', NULL),
-(6, 2, '202', '3', NULL, NULL, NULL, 'ห้องคู่ชั้น 2 วิวลานจอดรถ', NULL),
-(7, 2, '203', '0', '2024-07-01', '2025-06-30', 4, 'ห้องคู่ชั้น 2 วิวสวน', NULL),
-(8, 2, '204', '1', NULL, NULL, NULL, 'ห้องคู่ชั้น 2 วิวถนน', NULL),
-(9, 3, '301', '1', NULL, NULL, NULL, 'ห้องเดี่ยวพรีเมี่ยม ชั้น 3', NULL),
-(10, 3, '302', '2', NULL, NULL, NULL, 'ห้องเดี่ยวพรีเมี่ยม ชั้น 3 (ซ่อมแอร์)', NULL),
-(11, 3, '303', '1', NULL, NULL, NULL, 'ห้องเดี่ยวพรีเมี่ยม ชั้น 3 วิวสวย', NULL),
-(12, 4, 'D01', '1', NULL, NULL, NULL, 'ห้องรวมชาย ตึก D', NULL),
-(13, 4, 'D02', '0', '2024-08-01', '2025-01-31', 5, 'ห้องรวมชาย ตึก D', NULL),
-(14, 4, 'D03', '1', NULL, NULL, NULL, 'ห้องรวมชาย ตึก D', NULL),
-(15, 5, 'C01', '1', NULL, NULL, NULL, 'ห้องรวมหญิง ตึก C', NULL),
-(16, 5, 'C02', '3', NULL, NULL, NULL, 'ห้องรวมหญิง ตึก C', NULL),
-(17, 5, 'C03', '1', NULL, NULL, NULL, 'ห้องรวมหญิง ตึก C', NULL);
+INSERT INTO `room` (`room_id`, `room_type_id`, `room_number`, `status`, `contract_start`, `contract_end`, `current_tenant_id`, `description`, `room_img`, `price_per_month`, `price_per_semester`, `water_rate`, `electricity_rate`, `payment_due_day`, `room_style`, `gender_allowed`, `air_condition`, `fan`, `furnished`, `room_category`, `room_size`, `facilities`) VALUES
+(1, 1, '101', '0', '2025-08-20', '2026-01-14', 6, 'ห้องเดี่ยวชั้น 1 วิวสวน', NULL, '3500.00', '15750.00', '18.00', '7.50', 5, 'single', 'mixed', 1, 0, 'partial', 'standard', '15.00', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": true, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": true}'),
+(2, 1, '102', '1', NULL, NULL, NULL, 'ห้องเดี่ยวชั้น 1 วิวลานจอดรถ', NULL, '3500.00', '15750.00', '18.00', '7.50', 5, 'single', 'mixed', 1, 0, 'partial', 'standard', '15.00', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": true, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": true}'),
+(3, 1, '103', '0', '2024-06-01', '2025-05-31', 3, 'ห้องเดี่ยวชั้น 1 วิวสวน', NULL, '3500.00', '15750.00', '18.00', '7.50', 5, 'single', 'mixed', 1, 0, 'partial', 'standard', '15.00', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": true, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": true}'),
+(4, 1, '104', '1', NULL, NULL, NULL, 'ห้องเดี่ยวชั้น 1 วิวถนน', NULL, '3500.00', '15750.00', '18.00', '7.50', 5, 'single', 'mixed', 1, 0, 'partial', 'standard', '15.00', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": true, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": true}'),
+(5, 2, '201', '1', NULL, NULL, NULL, 'ห้องคู่ชั้น 2 วิวสวน', NULL, '2000.00', '9000.00', '15.00', '6.00', 5, 'double', 'mixed', 0, 1, 'partial', 'standard', '9.99', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": true, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": true}'),
+(6, 2, '202', '3', NULL, NULL, NULL, 'ห้องคู่ชั้น 2 วิวลานจอดรถ', NULL, '2000.00', '9000.00', '15.00', '6.00', 5, 'double', 'mixed', 0, 1, 'partial', 'standard', '9.99', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": true, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": true}'),
+(7, 2, '203', '0', '2024-07-01', '2025-06-30', 4, 'ห้องคู่ชั้น 2 วิวสวน', NULL, '2000.00', '9000.00', '15.00', '6.00', 5, 'double', 'mixed', 0, 1, 'partial', 'standard', '9.99', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": true, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": true}'),
+(8, 2, '204', '1', NULL, NULL, NULL, 'ห้องคู่ชั้น 2 วิวถนน', NULL, '2000.00', '9000.00', '15.00', '6.00', 5, 'double', 'mixed', 0, 1, 'partial', 'standard', '9.99', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": true, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": true}'),
+(9, 3, '301', '1', NULL, NULL, NULL, 'ห้องเดี่ยวพรีเมี่ยม ชั้น 3', NULL, '4500.00', '20250.00', '18.00', '8.00', 5, 'single', 'mixed', 1, 0, 'fully', 'deluxe', '18.00', '{\"tv\": true, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": true, \"closet\": true, \"balcony\": true, \"hot_water\": true, \"refrigerator\": true, \"private_bathroom\": true}'),
+(10, 3, '302', '2', NULL, NULL, NULL, 'ห้องเดี่ยวพรีเมี่ยม ชั้น 3 (ซ่อมแอร์)', NULL, '4500.00', '20250.00', '18.00', '8.00', 5, 'single', 'mixed', 1, 0, 'fully', 'deluxe', '18.00', '{\"tv\": true, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": true, \"closet\": true, \"balcony\": true, \"hot_water\": true, \"refrigerator\": true, \"private_bathroom\": true}'),
+(11, 3, '303', '1', NULL, NULL, NULL, 'ห้องเดี่ยวพรีเมี่ยม ชั้น 3 วิวสวย', NULL, '4500.00', '20250.00', '18.00', '8.00', 5, 'single', 'mixed', 1, 0, 'fully', 'deluxe', '18.00', '{\"tv\": true, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": true, \"closet\": true, \"balcony\": true, \"hot_water\": true, \"refrigerator\": true, \"private_bathroom\": true}'),
+(12, 4, 'D01', '1', NULL, NULL, NULL, 'ห้องรวมชาย ตึก D', NULL, '1200.00', '5400.00', '12.00', '5.00', 5, 'dormitory', 'male', 0, 1, 'partial', '', '25.00', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": false, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": false}'),
+(13, 4, 'D02', '0', '2024-08-01', '2025-01-31', 5, 'ห้องรวมชาย ตึก D', NULL, '1200.00', '5400.00', '12.00', '5.00', 5, 'dormitory', 'male', 0, 1, 'partial', '', '25.00', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": false, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": false}'),
+(14, 4, 'D03', '1', NULL, NULL, NULL, 'ห้องรวมชาย ตึก D', NULL, '1200.00', '5400.00', '12.00', '5.00', 5, 'dormitory', 'male', 0, 1, 'partial', '', '25.00', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": false, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": false}'),
+(15, 5, 'C01', '1', NULL, NULL, NULL, 'ห้องรวมหญิง ตึก C', NULL, '1200.00', '5400.00', '12.00', '5.00', 5, 'dormitory', 'female', 0, 1, 'partial', '', '25.00', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": false, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": false}'),
+(16, 5, 'C02', '3', NULL, NULL, NULL, 'ห้องรวมหญิง ตึก C', NULL, '1200.00', '5400.00', '12.00', '5.00', 5, 'dormitory', 'female', 0, 1, 'partial', '', '25.00', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": false, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": false}'),
+(17, 5, 'C03', '1', NULL, NULL, NULL, 'ห้องรวมหญิง ตึก C', NULL, '1200.00', '5400.00', '12.00', '5.00', 5, 'dormitory', 'female', 0, 1, 'partial', '', '25.00', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": false, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": false}'),
+(18, 6, 'A555', '1', NULL, NULL, NULL, NULL, NULL, '0.00', '0.00', '0.00', '0.00', 5, 'single', 'mixed', 0, 1, 'partial', 'standard', NULL, NULL);
 
 --
 -- Triggers `room`
@@ -394,6 +420,13 @@ CREATE TABLE `room_images` (
   `uploaded_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `room_images`
+--
+
+INSERT INTO `room_images` (`image_id`, `room_id`, `image_filename`, `image_description`, `image_order`, `is_primary`, `uploaded_at`) VALUES
+(1, 18, 'room-1758020458462-175307881.jpg', NULL, 1, 1, '2025-09-16 11:00:58');
+
 -- --------------------------------------------------------
 
 --
@@ -420,7 +453,7 @@ CREATE TABLE `room_type` (
   `facilities` json DEFAULT NULL COMMENT 'สิ่งอำนวยความสะดวกเพิ่มเติม',
   `room_size` decimal(5,2) DEFAULT NULL COMMENT 'ขนาดห้อง (ตารางเมตร)',
   `is_active` varchar(1) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `room_type`
@@ -431,7 +464,8 @@ INSERT INTO `room_type` (`room_type_id`, `room_type_name`, `description`, `thumb
 (2, 'ห้องคู่ พัดลม ประหยัด', 'ห้องคู่พัดลม เฟอร์นิเจอร์พื้นฐาน เหมาะสำหรับนักศึกษาที่ต้องการประหยัด', NULL, 2, '2000.00', '9000.00', '15.00', '6.00', 5, 'double', 'mixed', 0, 1, 'partial', 'standard', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": true, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": true}', '9.99', '1'),
 (3, 'ห้องเดี่ยว แอร์ ครบครัน', 'ห้องเดี่ยวปรับอากาศ เฟอร์นิเจอร์ครบครัน ตู้เย็น ทีวี น้ำอุ่น', NULL, 1, '4500.00', '20250.00', '18.00', '8.00', 5, 'single', 'mixed', 1, 0, 'fully', 'deluxe', '{\"tv\": true, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": true, \"closet\": true, \"balcony\": true, \"hot_water\": true, \"refrigerator\": true, \"private_bathroom\": true}', '18.00', '1'),
 (4, 'ห้องรวมชาย (โฮสเทล)', 'ห้องพักรวมสำหรับชายเท่านั้น เตียงสองชั้น 4 เตียง พัดลม ห้องน้ำรวม', NULL, 4, '1200.00', '5400.00', '12.00', '5.00', 5, 'dormitory', 'male', 0, 1, 'partial', 'hostel', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": false, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": false}', '25.00', '1'),
-(5, 'ห้องรวมหญิง (โฮสเทล)', 'ห้องพักรวมสำหรับหญิงเท่านั้น เตียงสองชั้น 4 เตียง พัดลม ห้องน้ำรวม', NULL, 4, '1200.00', '5400.00', '12.00', '5.00', 5, 'dormitory', 'female', 0, 1, 'partial', 'hostel', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": false, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": false}', '25.00', '1');
+(5, 'ห้องรวมหญิง (โฮสเทล)', 'ห้องพักรวมสำหรับหญิงเท่านั้น เตียงสองชั้น 4 เตียง พัดลม ห้องน้ำรวม', NULL, 4, '1200.00', '5400.00', '12.00', '5.00', 5, 'dormitory', 'female', 0, 1, 'partial', 'hostel', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": false, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": false}', '25.00', '1'),
+(6, 'dasdasdsa', 'asdasd', NULL, 1, '2500.00', '1500.00', '15.00', '8.00', 5, 'single', 'mixed', 0, 1, 'partial', 'standard', '{\"tv\": false, \"bed\": true, \"desk\": true, \"wifi\": true, \"chair\": true, \"closet\": true, \"balcony\": false, \"hot_water\": false, \"refrigerator\": false, \"private_bathroom\": true}', NULL, '1');
 
 -- --------------------------------------------------------
 
@@ -463,7 +497,7 @@ CREATE TABLE `stay` (
   `total_guests` int(11) NOT NULL DEFAULT '1',
   `stay_status` enum('active','completed','extended','terminated') NOT NULL DEFAULT 'active',
   `notes` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -509,7 +543,11 @@ ALTER TABLE `login_history`
 ALTER TABLE `member`
   ADD PRIMARY KEY (`mem_id`),
   ADD UNIQUE KEY `mem_card_id` (`mem_card_id`),
-  ADD UNIQUE KEY `mem_email` (`mem_email`);
+  ADD UNIQUE KEY `mem_email` (`mem_email`),
+  ADD KEY `idx_student_id` (`student_id`),
+  ADD KEY `idx_faculty` (`faculty`),
+  ADD KEY `idx_major` (`major`),
+  ADD KEY `idx_year` (`year`);
 
 --
 -- Indexes for table `meter_readings`
@@ -562,7 +600,11 @@ ALTER TABLE `room`
   ADD KEY `room_type_id` (`room_type_id`),
   ADD KEY `idx_room_status` (`status`),
   ADD KEY `idx_room_contract_end` (`contract_end`),
-  ADD KEY `idx_room_tenant` (`current_tenant_id`);
+  ADD KEY `idx_room_tenant` (`current_tenant_id`),
+  ADD KEY `idx_price_per_month` (`price_per_month`),
+  ADD KEY `idx_room_style` (`room_style`),
+  ADD KEY `idx_gender_allowed` (`gender_allowed`),
+  ADD KEY `idx_room_category` (`room_category`);
 
 --
 -- Indexes for table `room_images`
@@ -621,7 +663,7 @@ ALTER TABLE `dormitories`
 -- AUTO_INCREMENT for table `login_history`
 --
 ALTER TABLE `login_history`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `member`
@@ -633,7 +675,7 @@ ALTER TABLE `member`
 -- AUTO_INCREMENT for table `meter_readings`
 --
 ALTER TABLE `meter_readings`
-  MODIFY `reading_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `reading_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `monthly_bills`
@@ -651,19 +693,19 @@ ALTER TABLE `payment`
 -- AUTO_INCREMENT for table `room`
 --
 ALTER TABLE `room`
-  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `room_images`
 --
 ALTER TABLE `room_images`
-  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `room_type`
 --
 ALTER TABLE `room_type`
-  MODIFY `room_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `room_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `room_type_images`
